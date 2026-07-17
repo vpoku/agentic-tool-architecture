@@ -1,0 +1,300 @@
+<!DOCTYPE html><html lang="en" class="light" style=""><svg class="inline-defs-container" aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"></svg><head><style type="text/css"></style><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        try {
+            tailwind.config = {
+                darkMode: "class",
+                theme: {
+                    extend: {
+                        "colors": {
+                            "primary": "#c2652a", // Sahara Gold/Rust
+                            "on-primary": "#ffffff",
+                            "secondary": "#3d3d3d", // Deep Charcoal
+                            "background": "#fdfaf7", // Warm Paper
+                            "surface": "#fcf5ef", // Lighter Sahara
+                            "surface-variant": "#f4ede6",
+                            "outline": "#e5dcd3",
+                            "on-surface": "#2c2c2c",
+                            "on-surface-variant": "#6b625a",
+                            "primary-container": "#f8eadd",
+                            "on-primary-container": "#8b461a",
+                            "secondary-container": "#f2f2f2",
+                            "error": "#b3261e"
+                        },
+                        "borderRadius": {
+                            "DEFAULT": "0.5rem", // Sahara Roundness: 8px
+                            "lg": "0.5rem",
+                            "xl": "0.75rem",
+                            "full": "9999px"
+                        },
+                        "spacing": {
+                            "panel-padding": "24px",
+                            "margin-edge": "32px",
+                            "gutter": "32px",
+                            "unit": "8px",
+                            "canvas-grid": "24px"
+                        },
+                        "fontFamily": {
+                            "body-sm": ["Manrope", "sans-serif"],
+                            "headline-md": ["Playfair Display", "serif"],
+                            "body-lg": ["Manrope", "sans-serif"],
+                            "headline-lg": ["Playfair Display", "serif"],
+                            "code-sm": ["JetBrains Mono", "monospace"],
+                            "label-caps": ["Manrope", "sans-serif"],
+                            "body-md": ["Manrope", "sans-serif"],
+                            "display-lg": ["Playfair Display", "serif"]
+                        },
+                        "fontSize": {
+                            "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                            "headline-md": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                            "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                            "headline-lg": ["36px", {"lineHeight": "44px", "fontWeight": "600"}],
+                            "code-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                            "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700", "textTransform": "uppercase"}],
+                            "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                            "display-lg": ["52px", {"lineHeight": "60px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                        }
+                    },
+                },
+            }
+        } catch (_e) {}
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="font-body-md text-on-surface overflow-hidden h-screen flex flex-col bg-background">
+    <!-- TopNavBar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-outline flex justify-between items-center w-full px-margin-edge h-20 z-50">
+        <div class="flex items-center gap-10">
+            <span class="font-display-lg text-3xl italic font-semibold text-primary">CloudArch</span>
+            <nav class="hidden md:flex gap-8">
+                <a href="#" class="text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps">Projects</a>
+                <a href="#" class="text-primary border-b-2 border-primary font-bold pb-1 font-label-caps text-label-caps">Blueprint</a>
+                <a href="#" class="text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps">Compliance</a>
+                <a href="#" class="text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps">Insights</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="relative hidden lg:block">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant/50 text-xl">search</span>
+                <input type="text" placeholder="Search architecture..." class="bg-surface-variant/50 border border-outline rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:border-primary transition-all text-sm">
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="p-2 hover:bg-primary-container rounded-full transition-all material-symbols-outlined text-on-surface-variant text-xl">account_tree</button>
+                <button class="p-2 hover:bg-primary-container rounded-full transition-all material-symbols-outlined text-on-surface-variant text-xl">verified_user</button>
+                <button class="p-2 hover:bg-primary-container rounded-full transition-all material-symbols-outlined text-on-surface-variant text-xl">settings</button>
+            </div>
+            <button class="bg-primary text-on-primary px-8 py-2.5 rounded-lg font-bold hover:brightness-110 transition-all text-sm shadow-sm">Deploy to AWS</button>
+            <img class="w-10 h-10 rounded-full border border-primary/20" data-alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeYFBUBOoK61TgWFI-ckuN42DVdJbKlVYIKdOL_Jn5-um0JuYGNvXCKG0oG1QEZ0PCKUfBZkyA77xC6UmCDbJJzRofgSu3zaEum-2GlSbyEncCerMGBpW7wQdAsOydnVPJZk3QsUfCtSwt0GjmprBxgIgtRuoPAbimnkQSJ9DXqJDxdlqu5sTr3Kaxm_0vFQdBro6e5OTJzw3zNxGP12Uzl8z97GQmY538SxpS5PAtEiuTPqZJyJqUww">
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- SideNavBar -->
+        <aside class="bg-surface border-r border-outline fixed left-0 top-20 h-[calc(100vh-80px)] w-[280px] z-40 hidden md:flex flex-col p-panel-padding">
+            <div class="mb-10 p-6 bg-white border border-outline rounded-xl shadow-sm">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">hub</span>
+                    </div>
+                    <div>
+                        <h3 class="font-headline-md text-base text-on-surface leading-tight">Project Alpha</h3>
+                        <p class="font-body-sm text-on-surface-variant text-xs mt-1">GovCloud High (ITAR)</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-caps text-[10px]">FEDRAMP</span>
+                    <span class="px-2 py-0.5 rounded bg-secondary text-white font-label-caps text-[10px]">ITAR</span>
+                </div>
+            </div>
+            
+            <nav class="flex-1 space-y-1">
+                <button class="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all rounded-lg font-label-caps text-label-caps">
+                    <span class="material-symbols-outlined text-xl">analytics</span> Requirements Analysis
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 bg-primary text-on-primary shadow-lg shadow-primary/20 rounded-lg font-label-caps text-label-caps">
+                    <span class="material-symbols-outlined text-xl">hub</span> Visual Pipeline
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all rounded-lg font-label-caps text-label-caps">
+                    <span class="material-symbols-outlined text-xl">compare_arrows</span> Service Deep-Dive
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all rounded-lg font-label-caps text-label-caps">
+                    <span class="material-symbols-outlined text-xl">payments</span> Cost Estimator
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-primary hover:bg-primary/5 transition-all rounded-lg font-label-caps text-label-caps">
+                    <span class="material-symbols-outlined text-xl">gavel</span> Security Audit
+                </button>
+            </nav>
+
+            <button class="mt-4 border-2 border-primary text-primary py-3 rounded-lg font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all">
+                <span class="material-symbols-outlined">add</span> New Analysis
+            </button>
+            
+            <div class="pt-8 mt-8 border-t border-outline space-y-1">
+                <button class="w-full flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-all font-body-sm text-sm">
+                    <span class="material-symbols-outlined text-lg">help</span> Support
+                </button>
+                <button class="w-full flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:text-primary transition-all font-body-sm text-sm">
+                    <span class="material-symbols-outlined text-lg">description</span> Documentation
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content (Architect's Canvas) -->
+        <main class="flex-1 ml-0 md:ml-[280px] mr-0 lg:mr-[340px] relative overflow-auto p-gutter bg-[radial-gradient(#e5dcd3_1px,transparent_1px)] [background-size:24px_24px]">
+            <!-- Canvas Header -->
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h1 class="font-headline-lg text-4xl text-on-surface">Architect's Canvas</h1>
+                    <p class="font-body-md text-on-surface-variant italic mt-1">AWS Data Pipeline Visualization (Production)</p>
+                </div>
+                <div class="flex gap-3">
+                    
+                    
+                </div>
+            </div>
+
+            <!-- Visualization Area -->
+            <div class="relative w-full h-[600px] flex items-center justify-around px-8">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead" markerHeight="7" markerWidth="10" orient="auto" refX="9" refY="3.5">
+                            <polygon fill="#c2652a" points="0 0, 10 3.5, 0 7"></polygon>
+                        </marker>
+                    </defs>
+                    <path d="M 120 300 H 220" fill="none" marker-end="url(#arrowhead)" stroke="#c2652a" stroke-dasharray="6,4" stroke-width="2" class="opacity-40"></path>
+                    <path d="M 340 300 H 440" fill="none" marker-end="url(#arrowhead)" stroke="#c2652a" stroke-dasharray="6,4" stroke-width="2" class="opacity-40"></path>
+                    <path d="M 560 300 H 660" fill="none" marker-end="url(#arrowhead)" stroke="#c2652a" stroke-dasharray="6,4" stroke-width="2" class="opacity-40"></path>
+                    <path d="M 780 300 H 880" fill="none" marker-end="url(#arrowhead)" stroke="#c2652a" stroke-dasharray="6,4" stroke-width="2" class="opacity-40"></path>
+                </svg>
+
+                <!-- Architecture Nodes (Sahara Style) -->
+                <!-- Route 53 -->
+                <div class="canvas-node group cursor-pointer bg-white border border-outline p-6 rounded-xl w-36 h-48 flex flex-col items-center justify-between shadow-sm hover:shadow-xl hover:border-primary transition-all z-10">
+                    <span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">dns</span>
+                    <div class="text-center">
+                        <span class="font-label-caps text-[10px] block mb-1">Route 53</span>
+                        <code class="font-code-sm text-[9px] text-on-surface-variant bg-surface-variant px-1.5 py-0.5 rounded">R-53-GLOBAL</code>
+                    </div>
+                </div>
+
+                <!-- CloudFront -->
+                <div class="canvas-node group cursor-pointer bg-white border border-outline p-6 rounded-xl w-36 h-48 flex flex-col items-center justify-between shadow-sm hover:shadow-xl hover:border-primary transition-all z-10">
+                    <span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">public</span>
+                    <div class="text-center">
+                        <span class="font-label-caps text-[10px] block mb-1">CloudFront</span>
+                        <code class="font-code-sm text-[9px] text-on-surface-variant bg-surface-variant px-1.5 py-0.5 rounded">CF-DIST-01</code>
+                    </div>
+                </div>
+
+                <!-- S3 -->
+                <div class="canvas-node group cursor-pointer bg-white border-2 border-primary p-6 rounded-xl w-40 h-52 flex flex-col items-center justify-between shadow-xl z-10 relative ring-4 ring-primary/5">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Active</div>
+                    <span class="material-symbols-outlined text-5xl text-primary">folder</span>
+                    <div class="text-center">
+                        <span class="font-label-caps text-[11px] block mb-1 text-on-surface font-bold">S3 Bucket</span>
+                        <code class="font-code-sm text-[10px] text-primary/80 bg-primary/5 px-2 py-1 rounded">ASSET-STORE</code>
+                    </div>
+                </div>
+
+                <!-- Lambda -->
+                <div class="canvas-node group cursor-pointer bg-white border border-outline p-6 rounded-xl w-36 h-48 flex flex-col items-center justify-between shadow-sm hover:shadow-xl hover:border-primary transition-all z-10">
+                    <span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">terminal</span>
+                    <div class="text-center">
+                        <span class="font-label-caps text-[10px] block mb-1">Lambda</span>
+                        <code class="font-code-sm text-[9px] text-on-surface-variant bg-surface-variant px-1.5 py-0.5 rounded">PROC-v2.1</code>
+                    </div>
+                </div>
+
+                <!-- DynamoDB -->
+                <div class="canvas-node group cursor-pointer bg-white border border-outline p-6 rounded-xl w-36 h-48 flex flex-col items-center justify-between shadow-sm hover:shadow-xl hover:border-primary transition-all z-10">
+                    <span class="material-symbols-outlined text-4xl text-primary/60 group-hover:text-primary transition-colors">database</span>
+                    <div class="text-center">
+                        <span class="font-label-caps text-[10px] block mb-1">DynamoDB</span>
+                        <code class="font-code-sm text-[9px] text-on-surface-variant bg-surface-variant px-1.5 py-0.5 rounded">TBL-ARCH</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Inspector (Sahara Style) -->
+            
+        </main>
+
+        <!-- Chat Sidebar (Sahara Minimalism) -->
+        <aside class="w-[340px] bg-white border-l border-outline fixed right-0 top-20 h-[calc(100vh-80px)] flex flex-col z-40">
+            <div class="p-gutter border-b border-outline flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-xl">forum</span>
+                <h2 class="font-headline-md text-lg text-on-surface italic">Architectural Context</h2>
+            </div>
+            <div class="flex-1 overflow-y-auto p-panel-padding space-y-6">
+                <!-- Chat Message -->
+                <div class="space-y-3">
+                    <p class="font-body-sm text-on-surface-variant italic text-sm leading-relaxed border-l-2 border-primary/20 pl-4 py-1">How is data secured in transit between S3 and Lambda?</p>
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-primary flex-shrink-0 flex items-center justify-center shadow-md shadow-primary/20">
+                            <span class="material-symbols-outlined text-on-primary text-lg">auto_awesome</span>
+                        </div>
+                        <div class="bg-surface-variant p-4 rounded-lg text-body-sm text-on-surface text-sm leading-relaxed border border-outline">
+                            Data is encrypted using TLS 1.2+ endpoint connections. The Lambda execution role has explicit <code class="bg-white/50 px-1.5 py-0.5 rounded border border-outline text-xs">s3:GetObject</code> permissions with a condition requiring HTTPS.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance Box -->
+                <div class="bg-primary/5 p-6 rounded-xl border border-primary/20 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+                    <div class="flex gap-3 mb-3">
+                        <span class="material-symbols-outlined text-primary">warning</span>
+                        <p class="font-body-md text-on-surface font-bold text-sm">Compliance Warning</p>
+                    </div>
+                    <p class="font-body-sm text-on-surface-variant text-xs leading-relaxed">
+                        The current S3 policy lacks the <code class="font-code-sm text-[10px] bg-white px-1">aws:SecureTransport</code> requirement mandated by ITAR controls.
+                    </p>
+                    <button class="mt-4 text-primary text-xs font-bold hover:underline underline-offset-4 flex items-center gap-1 group">
+                        Apply Auto-Fix <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-panel-padding border-t border-outline bg-surface">
+                <div class="relative bg-white border border-outline rounded-xl p-4 shadow-sm focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                    <textarea class="w-full bg-transparent text-body-sm resize-none h-24 focus:outline-none placeholder:text-on-surface-variant/40" placeholder="Ask about the architecture..."></textarea>
+                    <button class="absolute bottom-4 right-4 bg-primary text-on-primary p-2 rounded-lg shadow-md hover:scale-105 transition-all">
+                        <span class="material-symbols-outlined text-xl">send</span>
+                    </button>
+                </div>
+                <div class="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+                    <button class="whitespace-nowrap px-4 py-1.5 bg-white border border-outline rounded-full text-[10px] font-label-caps text-on-surface-variant hover:border-primary hover:text-primary transition-all">Add CloudWatch</button>
+                    <button class="whitespace-nowrap px-4 py-1.5 bg-white border border-outline rounded-full text-[10px] font-label-caps text-on-surface-variant hover:border-primary hover:text-primary transition-all">Optimize Cost</button>
+                    <button class="whitespace-nowrap px-4 py-1.5 bg-white border border-outline rounded-full text-[10px] font-label-caps text-on-surface-variant hover:border-primary hover:text-primary transition-all">Audit IAM</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-secondary text-white/60 border-t border-white/5 flex justify-between items-center px-margin-edge py-6 w-full z-50 fixed bottom-0">
+        <div class="flex items-center gap-8">
+            <span class="font-label-caps text-[10px] font-bold tracking-widest text-white/80">© 2024 CloudArch Systems • FEDRAMP CERTIFIED</span>
+            <div class="flex gap-6">
+                <a class="hover:text-primary text-[10px] uppercase font-bold tracking-widest transition-colors" href="#">Privacy</a>
+                <a class="hover:text-primary text-[10px] uppercase font-bold tracking-widest transition-colors" href="#">Terms</a>
+                <a class="hover:text-primary text-[10px] uppercase font-bold tracking-widest transition-colors" href="#">Security</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-8">
+            <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
+                <span class="font-label-caps text-[10px] uppercase tracking-widest">System Status: Optimal</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-sm">wifi_tethering</span>
+                <span class="font-label-caps text-[10px] uppercase tracking-widest">Latency: 24ms</span>
+            </div>
+        </div>
+    </footer>
+
+    <script class="">
+        // Micro-interaction for canvas nodes
+        document.querySelectorAll('.canvas-node').forEach(node => {
+            node.addEventListener('click', () => {
+                document.querySelectorAll('.canvas-node').forEach(n => {
+                    n.classList.remove('border-2', 'border-primary', 'shadow-xl', 'ring-4', 'ring-primary/5');
+                    n.classList.add('border', 'border-outline', 'shadow-sm');
+                });
+                node.classList.remove('border', 'border-outline', 'shadow-sm</script></body></html>

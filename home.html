@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Manrope:wght@300;400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    try {
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "primary": "#c2652a",
+              "on-primary": "#ffffff",
+              "primary-container": "#f8eadd",
+              "on-primary-container": "#452109",
+              "secondary": "#7a5941",
+              "on-secondary": "#ffffff",
+              "secondary-container": "#f0e4db",
+              "on-secondary-container": "#2c1a0e",
+              "tertiary": "#5a623a",
+              "on-tertiary": "#ffffff",
+              "background": "#faf7f2",
+              "on-background": "#1e1b19",
+              "surface": "#fdfbf8",
+              "on-surface": "#1e1b19",
+              "surface-variant": "#f2eae1",
+              "on-surface-variant": "#50453e",
+              "outline": "#83756d",
+              "outline-variant": "#d5c9c1",
+              "inverse-surface": "#342f2b",
+              "inverse-on-surface": "#f9efea",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f7f3ed",
+              "surface-container": "#f1ede7",
+              "surface-container-high": "#ebe7e1",
+              "surface-container-highest": "#e5e1db"
+            },
+            "borderRadius": {
+              "DEFAULT": "0.5rem",
+              "lg": "0.75rem",
+              "xl": "1rem",
+              "full": "9999px"
+            },
+            "spacing": {
+              "unit": "4px",
+              "gutter": "24px",
+              "canvas-grid": "20px",
+              "panel-padding": "24px",
+              "margin-edge": "40px"
+            },
+            "fontFamily": {
+              "display": ["Playfair Display", "serif"],
+              "body": ["Manrope", "sans-serif"],
+              "code": ["JetBrains Mono", "monospace"]
+            },
+            "fontSize": {
+              "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+              "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+              "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+              "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+              "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+              "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+              "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    } catch (_e) {}
+    </script>
+<style>
+        .blueprint-grid {
+            background-image: radial-gradient(circle, #e5e1db 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body blueprint-grid min-h-screen overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 h-20 bg-surface/80 backdrop-blur-md border-b border-outline-variant z-50 flex justify-between items-center px-margin-edge">
+<div class="flex items-center gap-10">
+<span class="font-display text-2xl font-bold text-primary tracking-tight cursor-default">CloudArch Architect</span>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-primary border-b-2 border-primary font-bold pb-1 text-body-md" href="#">Projects</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Blueprint</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Compliance</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-md" href="#">Insights</a>
+</nav>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="p-2 hover:bg-primary-container transition-all rounded-full"><span class="material-symbols-outlined">account_tree</span></button>
+<button class="p-2 hover:bg-primary-container transition-all rounded-full"><span class="material-symbols-outlined">verified_user</span></button>
+<button class="p-2 hover:bg-primary-container transition-all rounded-full"><span class="material-symbols-outlined">settings</span></button>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-bold hover:shadow-lg hover:shadow-primary/20 transition-all duration-300">
+            Deploy to AWS
+        </button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container ring-1 ring-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD877JrO_EbIiyKhL1x4kzhICQZLqUmvXzvYwmSnMmBx3gYLXOHkq1kXet4yndpmyi0AQf3zVp_gL1AicLMD2ABrB4LjQ804V4r7J_Ol9WKJJoXmCwM81GVaq_l5-KLZcmmyoOhYuZlQ_Sei-hpsQWR9lWNcCBLlHXrbjg3wcUEVx_kakn5RMCGKjkOQMXlzq7VCwd2bqton060hnlpXFoxPao6Evc70RfgfuHn_QbH5x8-AcZl8y1JxA"/>
+</div>
+</div>
+</header>
+<div class="flex h-screen pt-20">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-20 h-[calc(100vh-80px)] w-[300px] bg-surface-container-low border-r border-outline-variant flex flex-col p-panel-padding space-y-unit z-40">
+<div class="flex items-center gap-4 mb-8 px-unit">
+<div class="w-1.5 h-10 bg-primary rounded-full"></div>
+<div>
+<h2 class="font-display text-xl text-secondary leading-tight font-bold">Project Alpha</h2>
+<p class="text-body-sm text-on-surface-variant font-medium">GovCloud High (ITAR)</p>
+</div>
+</div>
+<nav class="flex-grow space-y-1">
+<button class="w-full flex items-center gap-4 px-5 py-3 bg-primary-container text-on-primary-container font-bold rounded-xl transition-all">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-label-caps">Requirements Analysis</span>
+</button>
+<button class="w-full flex items-center gap-4 px-5 py-3 text-on-surface-variant hover:bg-surface-container transition-all rounded-xl">
+<span class="material-symbols-outlined">hub</span>
+<span class="text-label-caps">Visual Pipeline</span>
+</button>
+<button class="w-full flex items-center gap-4 px-5 py-3 text-on-surface-variant hover:bg-surface-container transition-all rounded-xl">
+<span class="material-symbols-outlined">compare_arrows</span>
+<span class="text-label-caps">Service Deep-Dive</span>
+</button>
+<button class="w-full flex items-center gap-4 px-5 py-3 text-on-surface-variant hover:bg-surface-container transition-all rounded-xl">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-label-caps">Cost Estimator</span>
+</button>
+<button class="w-full flex items-center gap-4 px-5 py-3 text-on-surface-variant hover:bg-surface-container transition-all rounded-xl">
+<span class="material-symbols-outlined">gavel</span>
+<span class="text-label-caps">Security Audit</span>
+</button>
+</nav>
+<button class="mt-4 bg-secondary text-on-secondary py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-on-background transition-colors shadow-sm">
+<span class="material-symbols-outlined">add</span>
+            New Analysis
+        </button>
+<div class="pt-6 mt-6 border-t border-outline-variant space-y-1">
+<button class="w-full flex items-center gap-4 px-5 py-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help</span>
+<span class="text-body-sm font-medium">Support</span>
+</button>
+<button class="w-full flex items-center gap-4 px-5 py-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">description</span>
+<span class="text-body-sm font-medium">Documentation</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-grow ml-[300px] p-margin-edge relative overflow-y-auto">
+<!-- GovCloud Badge -->
+<div class="absolute top-margin-edge right-margin-edge flex items-center gap-2 bg-inverse-surface text-inverse-on-surface px-5 py-2 rounded-full z-10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-caps">GovCloud Ready</span>
+</div>
+<!-- Central Hero Section -->
+<div class="max-w-4xl mx-auto mt-12 mb-20 flex flex-col items-center text-center">
+<div class="mb-14">
+<h1 class="font-display text-display-lg text-on-background mb-6 italic">Start Your Story</h1>
+<p class="text-body-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">Every great cloud infrastructure begins with a single idea. Tell us your vision, and we'll help you architect the next chapter of your digital journey.</p>
+</div>
+<!-- Input Area (Luxurious Minimalism) -->
+<div class="w-full bg-surface border border-outline-variant rounded-2xl p-8 shadow-xl shadow-secondary/5 relative group transition-all duration-500 hover:border-primary/50 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20">
+<textarea class="w-full bg-transparent border-none focus:ring-0 font-display text-headline-md text-on-surface placeholder:text-outline-variant/60 resize-none h-32 leading-relaxed" placeholder="Describe your web app idea in plain English..."></textarea>
+<div class="flex justify-between items-end mt-6 border-t border-surface-container pt-8">
+<div class="flex gap-4 text-on-surface-variant">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">mic</span></button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">attach_file</span></button>
+</div>
+<button class="bg-primary text-on-primary hover:bg-primary/90 flex items-center gap-4 px-10 py-4 rounded-xl font-bold transition-all transform active:scale-[0.98] shadow-lg shadow-primary/20 group">
+                        Generate Architecture
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">bolt</span>
+</button>
+</div>
+</div>
+<!-- Inspiration Chips -->
+<div class="mt-12 w-full">
+<p class="text-label-caps text-on-surface-variant mb-6 uppercase tracking-[0.2em]">Inspiration</p>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="px-6 py-2.5 bg-white border border-outline-variant rounded-full text-secondary font-medium text-body-sm hover:border-primary hover:text-primary transition-all shadow-sm">
+                        High-traffic e-commerce
+                    </button>
+<button class="px-6 py-2.5 bg-white border border-outline-variant rounded-full text-secondary font-medium text-body-sm hover:border-primary hover:text-primary transition-all shadow-sm">
+                        FedRAMP-compliant document intake
+                    </button>
+<button class="px-6 py-2.5 bg-white border border-outline-variant rounded-full text-secondary font-medium text-body-sm hover:border-primary hover:text-primary transition-all shadow-sm">
+                        Global media streaming
+                    </button>
+<button class="px-6 py-2.5 bg-white border border-outline-variant rounded-full text-secondary font-medium text-body-sm hover:border-primary hover:text-primary transition-all shadow-sm">
+                        Real-time IoT analytics
+                    </button>
+</div>
+</div>
+<!-- Featured Architectures (Bento Grid) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-28 w-full text-left">
+<div class="col-span-2 bg-surface border border-outline-variant rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition-shadow">
+<div class="h-64 bg-surface-container relative">
+<img class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-1000" data-alt="Technical architectural diagram" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANwlHkqc5ERVmEIc5LfEDEigPeA9BlQ6PfchkiEO0anzhEkXE2HspiRzx1Jg6xxt1kjZeSskjrsjOdQU1-nQhffmoHe6uhFO4kjer7fKIcjkhXysclKBao2UYxZZirWX3rh3CWwgtBBZpAKhF_Oob6CPqUhFH3Ig9QaGr2CJbD7RReabjtLg4yqz6TzNfr0cBr3KvwQYLBGSZNQPGipsQGmKJYy0zIyrrVwdUu4g-LU0rTBspE5tGUrg"/>
+<div class="absolute top-4 left-4 bg-tertiary/10 text-tertiary px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border border-tertiary/20 backdrop-blur-sm">System Healthy</div>
+</div>
+<div class="p-8">
+<span class="text-label-caps text-primary mb-2 block uppercase">Preset Template</span>
+<h3 class="font-display text-headline-md text-on-surface mb-3 italic">High-Availability E-Commerce</h3>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">Pre-configured with CloudFront distribution, S3 static hosting, and auto-scaling EC2 clusters behind an ALB.</p>
+</div>
+</div>
+<div class="bg-primary-container border border-primary/10 rounded-2xl p-8 flex flex-col justify-between group hover:bg-primary-container/80 transition-colors shadow-sm">
+<div>
+<div class="w-14 h-14 bg-white rounded-xl flex items-center justify-center mb-8 shadow-sm">
+<span class="material-symbols-outlined text-primary text-3xl">security</span>
+</div>
+<h3 class="font-display text-headline-md text-on-primary-container mb-3">ITAR Compliance</h3>
+<p class="text-body-sm text-on-primary-container/80 leading-relaxed">Automatically inject GovCloud-specific IAM policies and encryption constraints.</p>
+</div>
+<a class="text-primary font-bold text-body-sm flex items-center gap-2 group mt-8" href="#">
+                        Audit Requirements
+                        <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Learning Resources -->
+<section class="mt-28 w-full">
+<p class="text-label-caps text-on-surface-variant mb-8 uppercase tracking-[0.2em] text-center">Learning Resources</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-surface border border-outline-variant rounded-2xl p-8 flex gap-6 items-start group hover:border-primary transition-all cursor-pointer shadow-sm">
+<div class="w-16 h-16 bg-secondary-container rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-on-secondary-container text-3xl">play_circle</span>
+</div>
+<div>
+<h4 class="font-display text-xl mb-2 font-bold text-secondary">Cloud Architecture 101</h4>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">Master the fundamentals of VPC design, load balancing, and high-availability patterns for modern web apps.</p>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-2xl p-8 flex gap-6 items-start group hover:border-primary transition-all cursor-pointer shadow-sm">
+<div class="w-16 h-16 bg-secondary-container rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-on-secondary-container text-3xl">play_circle</span>
+</div>
+<div>
+<h4 class="font-display text-xl mb-2 font-bold text-secondary">GovCloud Security Essentials</h4>
+<p class="text-body-sm text-on-surface-variant leading-relaxed">A deep dive into ITAR compliance, IAM best practices, and data residency requirements for government workloads.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mt-32 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center py-12 w-full gap-8">
+<div class="flex items-center gap-8">
+<span class="text-label-caps font-bold text-primary uppercase tracking-widest">CloudArch Systems</span>
+<span class="text-body-sm text-on-surface-variant">© 2024 CloudArch Systems. FedRAMP Certified.</span>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-sm font-medium" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-sm font-medium" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-body-sm font-medium" href="#">Security Disclosure</a>
+</div>
+</footer>
+</div>
+</main>
+</div>
+<script>
+    // Micro-interactions for chips
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            // Sahara interaction effects
+        });
+    });
+
+    // Floating label behavior for prompt area
+    const textarea = document.querySelector('textarea');
+    if(textarea) {
+        textarea.addEventListener('focus', () => {
+            textarea.closest('.group').classList.add('ring-primary/20');
+        });
+        textarea.addEventListener('blur', () => {
+            textarea.closest('.group').classList.remove('ring-primary/20');
+        });
+    }
+</script>
+</body></html>
