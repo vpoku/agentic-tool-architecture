@@ -160,4 +160,41 @@ export async function addChatMessage(
   return full;
 }
 
+export async function updateProject(
+  projectId: string,
+  updates: Partial<Pick<Project, "name" | "description" | "status" | "architecture" | "complianceLevel">>
+): Promise<Project | null> {
+  const updated = await memoryStore.updateProject(projectId, updates);
+  if (!updated || !USE_DYNAMODB) return updated;
+
+  const doc = getClient();
+  await doc.send(
+    new PutCommand({
+      TableName: TABLE_PROJECTS,
+      Item: updated,
+    })
+  );
+  return updated;
+}
+
+export async function deleteProject(projectId: string): Promise<boolean> {
+  const deleted = await memoryStore.deleteProject(projectId);
+  if (!USE_DYNAMODB || !deleted) return deleted;
+
+  const doc = getClient();
+  const userId = memoryStore.getDemoUserId();
+  await doc.send(
+    new PutCommand({
+      TableName: TABLE_PROJECTS,
+      Item: {
+        projectId,
+        userId,
+        deleted: true,
+        updatedAt: new Date().toISOString(),
+      },
+    })
+  );
+  return deleted;
+}
+
 export { getDemoUserId } from "./projects";

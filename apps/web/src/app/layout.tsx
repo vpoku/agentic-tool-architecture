@@ -1,28 +1,22 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Manrope, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
+  variable: "--font-inter",
   display: "swap",
 });
 
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: "--font-mono",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "CloudArch Architect",
-  description: "AI-assisted AWS GovCloud architecture for students and builders",
+  title: "CloudArch — AWS GovCloud Architecture",
+  description: "Design and deploy AWS GovCloud architectures with AI",
 };
 
 export default function RootLayout({
@@ -31,18 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="light">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
-          rel="stylesheet"
-        />
-      </head>
-      <body
-        className={`${playfair.variable} ${manrope.variable} ${jetbrains.variable} font-body bg-background text-on-background antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en">
+      <body className={`${inter.variable} ${jetbrains.variable} font-sans`}>{children}</body>
     </html>
   );
 }

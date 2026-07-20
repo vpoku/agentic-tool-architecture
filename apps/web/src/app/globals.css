@@ -4,37 +4,33 @@
 @tailwind components;
 @tailwind utilities;
 
-.blueprint-grid {
-  background-image: radial-gradient(circle, #e5e1db 1px, transparent 1px);
-  background-size: 32px 32px;
+@layer base {
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
-.glass-panel {
-  background: rgba(255, 252, 240, 0.7);
-  backdrop-filter: blur(8px);
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #d4d4d4 transparent;
+  }
 }
 
-@keyframes subtle-pulse {
-  0% { opacity: 0.4; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
-.thinking-indicator {
-  animation: subtle-pulse 3s infinite ease-in-out;
-}
-
-@keyframes flow-dot {
-  0% { offset-distance: 0%; opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { offset-distance: 100%; opacity: 0; }
-}
-
-.flow-dot {
-  animation: flow-dot 2s infinite linear;
-}
-
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
 }

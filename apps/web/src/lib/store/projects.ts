@@ -39,9 +39,15 @@ export async function listProjects(userId?: string): Promise<Project[]> {
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
+export async function deleteProject(projectId: string): Promise<boolean> {
+  const existed = projects.delete(projectId);
+  messages.delete(projectId);
+  return existed;
+}
+
 export async function updateProject(
   projectId: string,
-  updates: Partial<Pick<Project, "name" | "status" | "architecture" | "complianceLevel">>
+  updates: Partial<Pick<Project, "name" | "description" | "status" | "architecture" | "complianceLevel">>
 ): Promise<Project | null> {
   const project = projects.get(projectId);
   if (!project) return null;

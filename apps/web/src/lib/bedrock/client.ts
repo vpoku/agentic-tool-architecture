@@ -54,7 +54,13 @@ export function textFromContent(blocks?: ContentBlock[]): string {
 
 export function toolUsesFromContent(blocks?: ContentBlock[]): ToolUseBlock[] {
   if (!blocks) return [];
-  return blocks.filter((b): b is ToolUseBlock => "toolUse" in b && !!b.toolUse).map((b) => b.toolUse!);
+  const uses: ToolUseBlock[] = [];
+  for (const block of blocks) {
+    if ("toolUse" in block && block.toolUse) {
+      uses.push(block.toolUse);
+    }
+  }
+  return uses;
 }
 
 export function isMockMode(): boolean {

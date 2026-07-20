@@ -2,6 +2,8 @@ export {
   createProject,
   getProject,
   listProjects,
+  updateProject,
+  deleteProject,
   saveArchitecture,
   getChatMessages,
   addChatMessage,

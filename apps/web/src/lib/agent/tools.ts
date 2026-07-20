@@ -8,6 +8,7 @@ import {
   type ServiceComparison,
   ArchitectureProposalSchema,
 } from "@cloudarch/shared";
+import type { ToolConfiguration } from "@aws-sdk/client-bedrock-runtime";
 
 export const TOOL_DEFINITIONS = [
   {
@@ -88,7 +89,7 @@ export const TOOL_DEFINITIONS = [
       },
     },
   },
-];
+] as NonNullable<ToolConfiguration["tools"]>;
 
 export function executeTool(
   name: string,

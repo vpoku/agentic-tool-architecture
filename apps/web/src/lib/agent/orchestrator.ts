@@ -1,4 +1,4 @@
-import type { Message } from "@aws-sdk/client-bedrock-runtime";
+import type { Message, ContentBlock } from "@aws-sdk/client-bedrock-runtime";
 import {
   converse,
   textFromContent,
@@ -59,7 +59,7 @@ export async function runAgent(
 
 **Estimated cost:** $${architecture.costEstimate.monthlyTotalLow.toFixed(0)}–$${architecture.costEstimate.monthlyTotalHigh.toFixed(0)}/month
 
-Explore the Blueprint tab for the interactive diagram, Compare for service tradeoffs, and Deploy to download your CDK stack.`;
+Explore the pipeline on the right — click any service for pricing and recommendations. Use **Deploy to AWS** when you're ready to export scripts for your AI IDE.`;
     await addChatMessage({ projectId, role: "assistant", content: reply });
     return { reply, architecture };
   }
@@ -108,12 +108,12 @@ Explore the Blueprint tab for the interactive diagram, Compare for service trade
       };
     });
 
-    messages.push({ role: "user", content: toolResultBlocks });
+    messages.push({ role: "user", content: toolResultBlocks as ContentBlock[] });
   }
 
   if (!finalReply) {
     finalReply =
-      "I've analyzed your requirements using GovCloud service lookups and compliance checks. View the Blueprint tab for the proposed architecture.";
+      "I've analyzed your requirements using GovCloud service lookups and compliance checks. Click services in the pipeline for details.";
   }
 
   architecture = buildMockArchitecture(projectId, userMessage);

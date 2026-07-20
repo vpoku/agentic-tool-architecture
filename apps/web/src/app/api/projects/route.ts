@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { createProject } from "@/lib/store";
+import { createProject, listProjects } from "@/lib/store";
+
+export async function GET() {
+  const projects = await listProjects();
+  return NextResponse.json({ projects });
+}
 
 export async function POST(request: Request) {
   const body = await request.json();

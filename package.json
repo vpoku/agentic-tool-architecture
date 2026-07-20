@@ -8,7 +8,8 @@
     "infra/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=@cloudarch/web",
+    "dev": "npm run build --workspace=@cloudarch/shared && npm run dev --workspace=@cloudarch/web",
+    "postinstall": "npm run build --workspace=@cloudarch/shared",
     "build": "npm run build --workspace=@cloudarch/shared && npm run build --workspace=@cloudarch/web",
     "lint": "npm run lint --workspace=@cloudarch/web",
     "typecheck": "npm run typecheck --workspaces --if-present"
