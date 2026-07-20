@@ -1,0 +1,19 @@
+{
+  "name": "cloudarch-architect",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "infra/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@cloudarch/web",
+    "build": "npm run build --workspace=@cloudarch/shared && npm run build --workspace=@cloudarch/web",
+    "lint": "npm run lint --workspace=@cloudarch/web",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
