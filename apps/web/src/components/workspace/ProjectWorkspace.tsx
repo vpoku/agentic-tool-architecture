@@ -14,6 +14,7 @@ interface ProjectWorkspaceProps {
 
 export function ProjectWorkspace({ project: initialProject, bootstrapMessage }: ProjectWorkspaceProps) {
   const [project, setProject] = useState(initialProject);
+  const [generating, setGenerating] = useState(false);
   const router = useRouter();
 
   const handleArchitectureGenerated = useCallback(
@@ -33,10 +34,15 @@ export function ProjectWorkspace({ project: initialProject, bootstrapMessage }: 
             projectId={project.projectId}
             initialDescription={bootstrapMessage}
             onArchitectureGenerated={handleArchitectureGenerated}
+            onGeneratingChange={setGenerating}
           />
         </div>
         <div className="flex-1 min-h-0 flex flex-col bg-background">
-          <PipelineCanvas projectId={project.projectId} architecture={project.architecture} />
+          <PipelineCanvas
+            projectId={project.projectId}
+            architecture={project.architecture}
+            generating={generating}
+          />
         </div>
       </div>
     </div>

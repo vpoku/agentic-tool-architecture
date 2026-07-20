@@ -46,6 +46,16 @@ export default async function ServiceDetailPage({
             <p className="text-sm text-muted mt-2 leading-relaxed">{insight.role}</p>
           </div>
 
+          {node.data.aiRecommendation && (
+            <section className="rounded-xl border border-accent/30 bg-accent-muted/30 p-6 mb-6">
+              <h2 className="text-sm font-semibold text-accent mb-2">AI recommendation (Bedrock + OpenSearch)</h2>
+              <p className="text-sm text-foreground leading-relaxed">{node.data.aiRecommendation}</p>
+              {node.data.ragSource && (
+                <p className="text-xs text-muted mt-2">Knowledge source: {node.data.ragSource}</p>
+              )}
+            </section>
+          )}
+
           <div className="grid sm:grid-cols-2 gap-4 mb-8">
             <div className="rounded-xl border border-border bg-card p-5">
               <p className="text-xs text-muted uppercase tracking-wider mb-1">Monthly cost</p>

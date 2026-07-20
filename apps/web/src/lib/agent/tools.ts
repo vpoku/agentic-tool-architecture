@@ -9,6 +9,7 @@ import {
   ArchitectureProposalSchema,
 } from "@cloudarch/shared";
 import type { ToolConfiguration } from "@aws-sdk/client-bedrock-runtime";
+import { retrieveFromKnowledgeBase } from "@/lib/bedrock/knowledge-base";
 
 export const TOOL_DEFINITIONS = [
   {
@@ -76,13 +77,14 @@ export const TOOL_DEFINITIONS = [
   },
   {
     toolSpec: {
-      name: "search_learning_content",
-      description: "Search GovCloud learning materials by topic or service name.",
+      name: "search_govcloud_knowledge",
+      description:
+        "Search OpenSearch-backed GovCloud knowledge base for architecture patterns, compliance guidance, and service best practices.",
       inputSchema: {
         json: {
           type: "object",
           properties: {
-            query: { type: "string" },
+            query: { type: "string", description: "Search query e.g. document intake FedRAMP" },
           },
           required: ["query"],
         },
@@ -91,11 +93,11 @@ export const TOOL_DEFINITIONS = [
   },
 ] as NonNullable<ToolConfiguration["tools"]>;
 
-export function executeTool(
+export async function executeTool(
   name: string,
   input: Record<string, unknown>,
   projectId: string
-): unknown {
+): Promise<unknown> {
   switch (name) {
     case "lookup_govcloud_service": {
       const serviceName = String(input.serviceName ?? "");
@@ -122,41 +124,20 @@ export function executeTool(
         services: (input.services as string[]) ?? [],
         framework: (input.framework as "FedRAMP" | "ITAR" | "HIPAA" | "None") ?? "FedRAMP",
       });
+    case "search_govcloud_knowledge": {
+      const query = String(input.query ?? "");
+      return retrieveFromKnowledgeBase(query, 5);
+    }
     case "search_learning_content": {
-      const query = String(input.query ?? "").toLowerCase();
-      return LEARNING_SNIPPETS.filter(
-        (s) => s.title.toLowerCase().includes(query) || s.tags.some((t) => t.includes(query))
-      ).slice(0, 3);
+      const query = String(input.query ?? "");
+      return retrieveFromKnowledgeBase(query, 3);
     }
     default:
       return { error: `Unknown tool: ${name}` };
   }
 }
 
-const LEARNING_SNIPPETS = [
-  {
-    title: "GovCloud Regions",
-    tags: ["govcloud", "regions", "fedramp"],
-    excerpt: "AWS GovCloud operates in us-gov-west-1 and us-gov-east-1. Data never leaves the US sovereign boundary.",
-  },
-  {
-    title: "Amazon S3 in GovCloud",
-    tags: ["s3", "storage", "encryption"],
-    excerpt: "Use SSE-KMS with customer-managed keys. Enable bucket versioning and block all public access.",
-  },
-  {
-    title: "AWS Lambda Patterns",
-    tags: ["lambda", "serverless", "compute"],
-    excerpt: "Lambda is ideal for event-driven document processing. Pair with SQS for burst workloads.",
-  },
-  {
-    title: "FedRAMP Compliance Basics",
-    tags: ["fedramp", "compliance", "security"],
-    excerpt: "FedRAMP High requires encryption at rest, audit logging, and boundary monitoring.",
-  },
-];
-
-function buildServiceComparison(services: string[], useCase: string): ServiceComparison {
+export function buildServiceComparison(services: string[], useCase: string): ServiceComparison {
   const details = services.map((name) => {
     const svc = findGovCloudService(name);
     return {

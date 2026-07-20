@@ -26,6 +26,8 @@ export const ServiceNodeSchema = z.object({
     description: z.string().optional(),
     govcloudAvailable: z.boolean().default(true),
     docsUrl: z.string().optional(),
+    aiRecommendation: z.string().optional(),
+    ragSource: z.string().optional(),
   }),
 });
 
@@ -97,6 +99,7 @@ export const ArchitectureProposalSchema = z.object({
   costEstimate: CostBreakdownSchema,
   alternatives: z.array(ServiceComparisonSchema),
   generatedIac: GeneratedIacSchema.optional(),
+  ragInsights: z.array(z.string()).optional(),
 });
 
 export const ProjectSchema = z.object({

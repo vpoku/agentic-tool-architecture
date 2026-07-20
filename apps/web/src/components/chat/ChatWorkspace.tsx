@@ -7,6 +7,7 @@ interface ChatWorkspaceProps {
   projectId: string;
   initialDescription?: string;
   onArchitectureGenerated?: (architecture: ArchitectureProposal) => void;
+  onGeneratingChange?: (generating: boolean) => void;
 }
 
 interface Message {
@@ -18,6 +19,7 @@ export function ChatWorkspace({
   projectId,
   initialDescription,
   onArchitectureGenerated,
+  onGeneratingChange,
 }: ChatWorkspaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -65,6 +67,7 @@ export function ChatWorkspace({
     setMessages((prev) => [...prev, { role: "user", content: text.trim() }]);
     setInput("");
     setLoading(true);
+    onGeneratingChange?.(true);
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -80,6 +83,7 @@ export function ChatWorkspace({
       }
     } finally {
       setLoading(false);
+      onGeneratingChange?.(false);
     }
   }
 
