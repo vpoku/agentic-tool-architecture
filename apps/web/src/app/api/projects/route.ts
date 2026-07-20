@@ -6,8 +6,8 @@ export async function POST(request: Request) {
   const description = String(body.description ?? "");
   const name =
     body.name ??
-    description.slice(0, 60) + (description.length > 60 ? "..." : "") ||
-    "New Project";
+    (description.slice(0, 60) + (description.length > 60 ? "..." : "") ||
+      "New Project");
 
   const project = await createProject({
     name,
