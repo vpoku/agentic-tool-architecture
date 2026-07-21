@@ -28,6 +28,11 @@ export const ServiceNodeSchema = z.object({
     docsUrl: z.string().optional(),
     aiRecommendation: z.string().optional(),
     ragSource: z.string().optional(),
+    monthlyCostLow: z.number().optional(),
+    monthlyCostHigh: z.number().optional(),
+    scalabilityLabel: z.string().optional(),
+    scalabilityDetail: z.string().optional(),
+    scalabilityRating: z.enum(["low", "medium", "high"]).optional(),
   }),
 });
 

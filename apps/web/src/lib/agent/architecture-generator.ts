@@ -2,17 +2,18 @@ import {
   ArchitectureProposalSchema,
   autoLayoutServices,
   checkCompliance,
+  enrichArchitectureAnalytics,
   estimateMonthlyCost,
   findGovCloudService,
   generateFullIac,
   type ArchitectureProposal,
   type ServiceNode,
 } from "@cloudarch/shared";
-import { converse, textFromContent } from "@/lib/bedrock/client";
+import { invokeArchitectureModel } from "@/lib/bedrock/client";
 import { formatRagContext, retrieveFromKnowledgeBase, type RagResult } from "@/lib/bedrock/knowledge-base";
 import { buildMockArchitecture, buildServiceComparison } from "@/lib/agent/tools";
 
-const ARCHITECTURE_JSON_PROMPT = `You are an AWS GovCloud solutions architect. Output ONLY valid JSON matching this structure (no markdown, no explanation):
+const ARCHITECTURE_JSON_PROMPT = `You are an AWS GovCloud solutions architect powered by OpenSearch RAG context. Output ONLY valid JSON (no markdown):
 
 {
   "summary": "one paragraph architecture summary",
@@ -28,7 +29,10 @@ const ARCHITECTURE_JSON_PROMPT = `You are an AWS GovCloud solutions architect. O
         "category": "Networking"|"Compute"|"Storage"|"Database"|"Integration"|"Security"|"Management",
         "description": "role in this architecture",
         "govcloudAvailable": true,
-        "aiRecommendation": "why this service was chosen for this workload"
+        "aiRecommendation": "why this service was chosen",
+        "scalabilityLabel": "e.g. 10k docs/day",
+        "scalabilityDetail": "how this service scales for the workload",
+        "scalabilityRating": "low"|"medium"|"high"
       }
     }
   ],
@@ -41,8 +45,7 @@ const ARCHITECTURE_JSON_PROMPT = `You are an AWS GovCloud solutions architect. O
 
 Rules:
 - Use ONLY GovCloud-available services (us-gov-west-1)
-- Include 6-10 services with clear data flow
-- Position y values: Networking=0, Compute=140, Storage/Database=420, Security=560, Management=700
+- Include 6-10 services with clear data flow left-to-right / top-to-bottom
 - connections must reference valid service ids`;
 
 function extractJson(text: string): unknown {
@@ -71,6 +74,7 @@ function enrichServicesWithCatalog(services: ServiceNode[], ragResults: RagResul
     );
     return {
       ...node,
+      type: "awsService",
       data: {
         ...node.data,
         govcloudAvailable: catalog?.available ?? node.data.govcloudAvailable,
@@ -85,80 +89,80 @@ function enrichServicesWithCatalog(services: ServiceNode[], ragResults: RagResul
   });
 }
 
+function buildProposalFromParsed(
+  projectId: string,
+  userMessage: string,
+  parsed: Record<string, unknown>,
+  ragResults: RagResult[],
+  services: ServiceNode[]
+): ArchitectureProposal {
+  const workload = (parsed.workload as Record<string, number>) ?? {};
+  const framework = (parsed.compliance as { framework?: string })?.framework ?? "FedRAMP";
+  const complianceFlags = checkCompliance({
+    services: services.map((s) => s.data.service),
+    framework: framework as "FedRAMP" | "ITAR" | "HIPAA" | "None",
+  });
+
+  const costEstimate = estimateMonthlyCost({
+    documentsPerDay: Number(workload.documentsPerDay ?? 10_000),
+    storageGb: Number(workload.storageGb ?? 500),
+  });
+
+  const proposal: ArchitectureProposal = {
+    projectId,
+    summary: String(parsed.summary ?? `GovCloud architecture for: ${userMessage.slice(0, 200)}`),
+    compliance: {
+      framework: framework as ArchitectureProposal["compliance"]["framework"],
+      level: String((parsed.compliance as { level?: string })?.level ?? "High"),
+      flags: complianceFlags,
+    },
+    services,
+    connections: (parsed.connections as ArchitectureProposal["connections"]) ?? [],
+    tradeoffs: (parsed.tradeoffs as ArchitectureProposal["tradeoffs"]) ?? [],
+    costEstimate,
+    alternatives: [
+      buildServiceComparison(["Lambda", "Fargate"], "compute for document processing"),
+    ],
+    ragInsights: ragResults.map((r) => r.text.slice(0, 160)),
+  };
+
+  proposal.generatedIac = generateFullIac(proposal);
+  return enrichArchitectureAnalytics(proposal);
+}
+
 export async function generateArchitectureProposal(
   projectId: string,
   userMessage: string,
   agentAnalysis: string
 ): Promise<ArchitectureProposal> {
   const ragResults = await retrieveFromKnowledgeBase(
-    `${userMessage} AWS GovCloud architecture services compliance`,
+    `${userMessage} AWS GovCloud architecture services compliance scalability pricing`,
     6
   );
   const ragContext = formatRagContext(ragResults);
 
   try {
-    const response = await converse({
+    const raw = await invokeArchitectureModel({
       system: ARCHITECTURE_JSON_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              text: `User requirements:\n${userMessage}\n\nAgent analysis:\n${agentAnalysis}\n\nRetrieved GovCloud knowledge (OpenSearch RAG):\n${ragContext}\n\nGenerate the architecture JSON for project ${projectId}.`,
-            },
-          ],
-        },
-      ],
+      userMessage: `User requirements:\n${userMessage}\n\nContext:\n${agentAnalysis}\n\nOpenSearch RAG results:\n${ragContext}\n\nGenerate architecture JSON for project ${projectId}.`,
       maxTokens: 8192,
     });
 
-    const raw = textFromContent(response.output?.message?.content);
     const parsed = extractJson(raw) as Record<string, unknown>;
-    const workload = (parsed.workload as Record<string, number>) ?? {};
-
     const services = enrichServicesWithCatalog(
       autoLayoutServices((parsed.services as ServiceNode[]) ?? []),
       ragResults
     );
 
-    const framework =
-      (parsed.compliance as { framework?: string })?.framework ?? "FedRAMP";
-    const complianceFlags = checkCompliance({
-      services: services.map((s) => s.data.service),
-      framework: framework as "FedRAMP" | "ITAR" | "HIPAA" | "None",
-    });
-
-    const costEstimate = estimateMonthlyCost({
-      documentsPerDay: Number(workload.documentsPerDay ?? 10000),
-      storageGb: Number(workload.storageGb ?? 500),
-    });
-
-    const proposal: ArchitectureProposal = {
-      projectId,
-      summary: String(parsed.summary ?? `GovCloud architecture for: ${userMessage.slice(0, 200)}`),
-      compliance: {
-        framework: framework as ArchitectureProposal["compliance"]["framework"],
-        level: String((parsed.compliance as { level?: string })?.level ?? "High"),
-        flags: complianceFlags,
-      },
-      services,
-      connections: (parsed.connections as ArchitectureProposal["connections"]) ?? [],
-      tradeoffs: (parsed.tradeoffs as ArchitectureProposal["tradeoffs"]) ?? [],
-      costEstimate,
-      alternatives: [
-        buildServiceComparison(["Lambda", "Fargate"], "compute for document processing"),
-      ],
-      ragInsights: ragResults.map((r) => r.text.slice(0, 160)),
-    };
-
-    proposal.generatedIac = generateFullIac(proposal);
-    return ArchitectureProposalSchema.parse(proposal);
+    return ArchitectureProposalSchema.parse(
+      buildProposalFromParsed(projectId, userMessage, parsed, ragResults, services)
+    );
   } catch (err) {
-    console.warn("Bedrock architecture generation failed, using enhanced mock:", err);
+    console.warn("GPT OSS architecture generation failed, using enhanced mock:", err);
     const mock = buildMockArchitecture(projectId, userMessage);
     mock.ragInsights = ragResults.map((r) => r.text.slice(0, 160));
     mock.services = enrichServicesWithCatalog(autoLayoutServices(mock.services), ragResults);
     mock.generatedIac = generateFullIac(mock);
-    return ArchitectureProposalSchema.parse(mock);
+    return ArchitectureProposalSchema.parse(enrichArchitectureAnalytics(mock));
   }
 }

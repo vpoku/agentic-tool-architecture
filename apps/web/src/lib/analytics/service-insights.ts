@@ -137,13 +137,23 @@ export function getServiceInsight(
   return {
     node,
     role: meta?.role ?? node.data.description ?? "AWS managed service in your architecture",
-    monthlyCostLow: monthlyCostLow || architecture.costEstimate.monthlyTotalLow * 0.05,
-    monthlyCostHigh: monthlyCostHigh || architecture.costEstimate.monthlyTotalHigh * 0.15,
-    capacity: meta?.capacity ?? {
-      label: "Workload fit",
-      value: "Scales with demand",
-      detail: "Sizing depends on your intake volume and retention policy",
-    },
+    monthlyCostLow:
+      node.data.monthlyCostLow ??
+      (monthlyCostLow || architecture.costEstimate.monthlyTotalLow * 0.05),
+    monthlyCostHigh:
+      node.data.monthlyCostHigh ??
+      (monthlyCostHigh || architecture.costEstimate.monthlyTotalHigh * 0.15),
+    capacity: node.data.scalabilityLabel
+      ? {
+          label: "Scalability",
+          value: node.data.scalabilityLabel,
+          detail: node.data.scalabilityDetail ?? "Sized for your workload",
+        }
+      : meta?.capacity ?? {
+          label: "Workload fit",
+          value: "Scales with demand",
+          detail: "Sizing depends on your intake volume and retention policy",
+        },
     recommendations,
     govcloudNotes: meta?.notes ?? ["Confirm FedRAMP authorization for this service in GovCloud"],
     relatedAlternatives,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ReactFlow,
@@ -12,39 +12,33 @@ import {
   type Edge,
 } from "@xyflow/react";
 import type { ArchitectureProposal, ServiceNode } from "@cloudarch/shared";
+import { AwsServiceNode, type AwsServiceNodeData } from "@/components/pipeline/AwsServiceNode";
+import { NodeHoverTooltip } from "@/components/pipeline/NodeHoverTooltip";
+import { PipelineLayerBands } from "@/components/pipeline/PipelineLayerBands";
 
-function toFlowNodes(services: ServiceNode[], revealCount: number): Node[] {
+const nodeTypes = { awsService: AwsServiceNode };
+
+const SKELETON_LAYERS = [
+  { id: "sk-net", category: "Networking", y: 40 },
+  { id: "sk-comp", category: "Compute", y: 180 },
+  { id: "sk-store", category: "Storage", y: 420 },
+  { id: "sk-sec", category: "Security", y: 580 },
+];
+
+function toFlowNodes(
+  services: ServiceNode[],
+  revealCount: number,
+  onHover: AwsServiceNodeData["onHover"]
+): Node[] {
   return services.map((s, index) => ({
     id: s.id,
-    type: "default",
+    type: "awsService",
     position: s.position,
     data: {
-      label: (
-        <div
-          className={`text-center px-1 py-0.5 cursor-pointer transition-opacity duration-500 ${
-            index < revealCount ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className="text-xs font-semibold text-foreground">{s.data.label}</div>
-          <div className="text-[10px] text-muted mt-0.5">{s.data.category}</div>
-          {s.data.aiRecommendation && index < revealCount && (
-            <div className="mt-1 text-[9px] text-accent leading-tight line-clamp-2">
-              AI: {s.data.aiRecommendation.slice(0, 60)}…
-            </div>
-          )}
-        </div>
-      ),
       service: s,
-    },
-    style: {
-      background: "#ffffff",
-      border: `1.5px solid ${index < revealCount ? "#2563eb" : "#e5e5e5"}`,
-      borderRadius: "10px",
-      padding: "10px 8px",
-      minWidth: 140,
-      boxShadow: index < revealCount ? "0 2px 8px rgb(37 99 235 / 0.12)" : "none",
-      transition: "all 0.4s ease",
-    },
+      visible: index < revealCount,
+      onHover,
+    } satisfies AwsServiceNodeData,
   }));
 }
 
@@ -61,7 +55,7 @@ function toFlowEdges(
     style: {
       stroke: i < revealCount ? "#64748b" : "#e5e5e5",
       strokeWidth: 1.5,
-      opacity: i < revealCount ? 1 : 0.3,
+      opacity: i < revealCount ? 1 : 0.2,
     },
     labelStyle: { fontSize: 10, fill: "#64748b" },
   }));
@@ -83,6 +77,16 @@ export function PipelineCanvas({
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [revealCount, setRevealCount] = useState(0);
   const [selectedNode, setSelectedNode] = useState<ServiceNode | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<ServiceNode | null>(null);
+  const [hoverRect, setHoverRect] = useState<DOMRect | undefined>();
+
+  const handleHover = useCallback<NonNullable<AwsServiceNodeData["onHover"]>>(
+    (service, rect) => {
+      setHoveredNode(service);
+      setHoverRect(rect);
+    },
+    []
+  );
 
   useEffect(() => {
     if (!architecture || generating) {
@@ -108,19 +112,17 @@ export function PipelineCanvas({
 
   useEffect(() => {
     if (architecture && !generating) {
-      setNodes(toFlowNodes(architecture.services, revealCount));
+      setNodes(toFlowNodes(architecture.services, revealCount, handleHover));
       setEdges(toFlowEdges(architecture.connections, revealCount));
     }
-  }, [architecture, generating, revealCount, setNodes, setEdges]);
+  }, [architecture, generating, revealCount, handleHover, setNodes, setEdges]);
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
-      const svc = architecture?.services.find((s) => s.id === node.id);
-      if (svc) {
-        setSelectedNode(svc);
-      }
+      const data = node.data as unknown as AwsServiceNodeData;
+      if (data.service) setSelectedNode(data.service);
     },
-    [architecture]
+    []
   );
 
   const onNodeDoubleClick = useCallback(
@@ -130,33 +132,52 @@ export function PipelineCanvas({
     [projectId, router]
   );
 
+  const flowProps = useMemo(
+    () => ({
+      nodeTypes,
+      fitView: true as const,
+      fitViewOptions: { padding: 0.2 },
+      proOptions: { hideAttribution: true as const },
+    }),
+    []
+  );
+
   if (generating) {
     return (
       <div className="flex-1 flex flex-col min-h-0 m-4">
         <div className="flex items-center gap-2 mb-3 px-1">
           <span className="w-2 h-2 rounded-full bg-accent animate-pulse-soft" />
-          <h2 className="text-sm font-semibold text-foreground">Generating architecture…</h2>
+          <h2 className="text-sm font-semibold text-foreground">Illustrating architecture…</h2>
         </div>
-        <div className="flex-1 rounded-xl border border-border bg-card flex items-center justify-center min-h-[320px]">
-          <div className="text-center max-w-md px-8">
-            <div className="flex justify-center gap-3 mb-6">
-              {["Retrieve", "Analyze", "Design", "Layout"].map((step, i) => (
-                <div key={step} className="flex flex-col items-center gap-1">
-                  <div
-                    className="w-8 h-8 rounded-full border-2 border-accent flex items-center justify-center text-xs font-bold text-accent animate-pulse-soft"
-                    style={{ animationDelay: `${i * 0.3}s` }}
-                  >
-                    {i + 1}
+        <div className="flex-1 rounded-xl border border-border overflow-hidden bg-card min-h-[320px] relative">
+          <PipelineLayerBands />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center max-w-md px-8 z-10">
+              <div className="flex justify-center gap-3 mb-6">
+                {["Retrieve", "Analyze", "Design", "Layout"].map((step, i) => (
+                  <div key={step} className="flex flex-col items-center gap-1">
+                    <div
+                      className="w-8 h-8 rounded-full border-2 border-accent flex items-center justify-center text-xs font-bold text-accent animate-pulse-soft"
+                      style={{ animationDelay: `${i * 0.3}s` }}
+                    >
+                      {i + 1}
+                    </div>
+                    <span className="text-[10px] text-muted">{step}</span>
                   </div>
-                  <span className="text-[10px] text-muted">{step}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+              <p className="text-sm text-muted leading-relaxed">
+                OpenSearch RAG + GPT OSS 120B is designing your GovCloud backend pipeline…
+              </p>
             </div>
-            <p className="text-sm text-muted leading-relaxed">
-              Querying OpenSearch knowledge base and Bedrock to recommend GovCloud services and
-              sketch your backend pipeline…
-            </p>
           </div>
+          {SKELETON_LAYERS.map((layer) => (
+            <div
+              key={layer.id}
+              className="absolute left-1/2 -translate-x-1/2 w-36 h-14 rounded-xl border-2 border-dashed border-border/60 animate-pulse-soft"
+              style={{ top: layer.y }}
+            />
+          ))}
         </div>
       </div>
     );
@@ -178,8 +199,8 @@ export function PipelineCanvas({
           </div>
           <p className="text-sm font-medium text-foreground mb-1">Pipeline will appear here</p>
           <p className="text-xs text-muted leading-relaxed">
-            Send a prompt in the chat. Bedrock + OpenSearch RAG will design and visualize your
-            GovCloud backend.
+            Send a prompt in the chat. OpenSearch RAG + GPT OSS 120B will illustrate your GovCloud
+            backend architecture.
           </p>
         </div>
       </div>
@@ -192,7 +213,7 @@ export function PipelineCanvas({
         <div>
           <h2 className="text-sm font-semibold text-foreground">Architecture pipeline</h2>
           <p className="text-xs text-muted mt-0.5">
-            Click a node for AI recommendations · double-click for full details
+            Hover for pricing & scalability · click to pin · double-click for details
           </p>
         </div>
         <div className="flex gap-2">
@@ -206,7 +227,8 @@ export function PipelineCanvas({
       </div>
 
       <div className="flex flex-1 gap-3 min-h-0">
-        <div className="flex-1 rounded-xl border border-border overflow-hidden bg-card min-h-[320px]">
+        <div className="flex-1 rounded-xl border border-border overflow-hidden bg-card min-h-[320px] relative">
+          <PipelineLayerBands />
           <ReactFlow
             nodes={nodes}
             edges={edges}
@@ -214,13 +236,13 @@ export function PipelineCanvas({
             onEdgesChange={onEdgesChange}
             onNodeClick={onNodeClick}
             onNodeDoubleClick={onNodeDoubleClick}
-            fitView
-            fitViewOptions={{ padding: 0.2 }}
-            proOptions={{ hideAttribution: true }}
+            {...flowProps}
+            className="relative z-10"
           >
             <Background gap={20} color="#e5e5e5" />
             <Controls showInteractive={false} className="!shadow-soft !border-border" />
           </ReactFlow>
+          <NodeHoverTooltip service={hoveredNode} anchorRect={hoverRect} />
         </div>
 
         {selectedNode && (
@@ -237,18 +259,20 @@ export function PipelineCanvas({
                 ×
               </button>
             </div>
+            {selectedNode.data.monthlyCostLow != null && (
+              <p className="text-xs text-muted mb-2">
+                Cost: ${selectedNode.data.monthlyCostLow.toFixed(0)}–$
+                {(selectedNode.data.monthlyCostHigh ?? 0).toFixed(0)}/mo
+              </p>
+            )}
             {selectedNode.data.aiRecommendation && (
               <div className="mb-3 rounded-lg bg-accent-muted/50 p-3">
                 <p className="text-[10px] font-bold text-accent uppercase mb-1">AI recommendation</p>
                 <p className="text-xs text-foreground leading-relaxed">
                   {selectedNode.data.aiRecommendation}
                 </p>
-                {selectedNode.data.ragSource && (
-                  <p className="text-[10px] text-muted mt-2 truncate">Source: {selectedNode.data.ragSource}</p>
-                )}
               </div>
             )}
-            <p className="text-xs text-muted leading-relaxed mb-3">{selectedNode.data.description}</p>
             <button
               onClick={() => router.push(`/projects/${projectId}/services/${selectedNode.id}`)}
               className="w-full text-xs font-medium text-accent hover:underline"
