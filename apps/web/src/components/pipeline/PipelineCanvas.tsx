@@ -15,6 +15,8 @@ import type { ArchitectureProposal, ServiceNode } from "@cloudarch/shared";
 import { AwsServiceNode, type AwsServiceNodeData } from "@/components/pipeline/AwsServiceNode";
 import { NodeHoverTooltip } from "@/components/pipeline/NodeHoverTooltip";
 import { PipelineLayerBands } from "@/components/pipeline/PipelineLayerBands";
+import { ArchitectureReportCard } from "@/components/pipeline/ArchitectureReportCard";
+import { ArchitectureInsights } from "@/components/pipeline/ArchitectureInsights";
 
 const nodeTypes = { awsService: AwsServiceNode };
 
@@ -63,14 +65,18 @@ function toFlowEdges(
 
 interface PipelineCanvasProps {
   projectId: string;
+  projectName?: string;
   architecture?: ArchitectureProposal;
   generating?: boolean;
+  onDeploy?: () => void;
 }
 
 export function PipelineCanvas({
   projectId,
+  projectName,
   architecture,
   generating = false,
+  onDeploy,
 }: PipelineCanvasProps) {
   const router = useRouter();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -208,25 +214,43 @@ export function PipelineCanvas({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 m-4">
-      <div className="flex items-center justify-between mb-3 px-1">
+    <div className="flex-1 flex flex-col min-h-0 m-4 overflow-y-auto scrollbar-thin">
+      <div className="flex items-center justify-between mb-3 px-1 flex-shrink-0">
         <div>
           <h2 className="text-sm font-semibold text-foreground">Architecture pipeline</h2>
           <p className="text-xs text-muted mt-0.5">
             Hover for pricing & scalability · click to pin · double-click for details
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          {architecture.scores && (
+            <div className="hidden lg:flex items-center gap-2 text-xs">
+              <span title="Security">
+                {"★".repeat(architecture.scores.security)}
+                {"☆".repeat(5 - architecture.scores.security)}
+              </span>
+              <span className="text-muted">|</span>
+              <span className="text-muted">Report card</span>
+            </div>
+          )}
           <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-accent-muted text-accent">
             {architecture.compliance.framework}
           </span>
           <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-background border border-border text-muted">
             {architecture.services.length} services
           </span>
+          {onDeploy && (
+            <button
+              onClick={onDeploy}
+              className="flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Deploy on AWS
+            </button>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-1 gap-3 min-h-0">
+      <div className="flex flex-1 gap-3 min-h-[320px] flex-shrink-0">
         <div className="flex-1 rounded-xl border border-border overflow-hidden bg-card min-h-[320px] relative">
           <PipelineLayerBands />
           <ReactFlow
@@ -283,14 +307,24 @@ export function PipelineCanvas({
         )}
       </div>
 
-      {architecture.ragInsights && architecture.ragInsights.length > 0 && (
-        <div className="mt-3 rounded-lg border border-border bg-card px-3 py-2">
-          <p className="text-[10px] font-bold text-accent uppercase mb-1">OpenSearch RAG insights</p>
-          <p className="text-xs text-muted truncate">{architecture.ragInsights[0]}</p>
+      <div className="grid lg:grid-cols-3 gap-4 mt-4 flex-shrink-0">
+        {architecture.scores && (
+          <ArchitectureReportCard scores={architecture.scores} />
+        )}
+        <div className={`${architecture.scores ? "lg:col-span-2" : "lg:col-span-3"} rounded-xl border border-border bg-card p-4`}>
+          <p className="text-[10px] font-bold text-accent uppercase tracking-wider mb-1">
+            Architecture summary
+          </p>
+          <p className="text-xs text-muted leading-relaxed">{architecture.summary}</p>
+          {architecture.ragInsights && architecture.ragInsights.length > 0 && (
+            <p className="text-[11px] text-muted mt-2 pt-2 border-t border-border truncate">
+              RAG: {architecture.ragInsights[0]}
+            </p>
+          )}
         </div>
-      )}
+      </div>
 
-      <p className="text-xs text-muted mt-2 px-1 truncate">{architecture.summary}</p>
+      <ArchitectureInsights architecture={architecture} />
     </div>
   );
 }

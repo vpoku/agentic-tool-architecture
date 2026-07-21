@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ProjectSidebar } from "@/components/layout/ProjectSidebar";
+import { AppShell } from "@/components/layout/AppShell";
+import { SidebarToggle } from "@/components/layout/AppShell";
 
 export default function HomePage() {
   const [description, setDescription] = useState("");
@@ -30,16 +31,19 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex h-screen">
-      <ProjectSidebar />
-      <main className="flex-1 flex flex-col items-center justify-center p-8 bg-background">
+    <AppShell>
+      <main className="flex-1 flex flex-col items-center justify-center p-8 bg-background relative">
+        <div className="absolute top-4 left-4 hidden md:block">
+          <SidebarToggle />
+        </div>
         <div className="w-full max-w-xl">
           <h1 className="text-3xl font-semibold text-foreground tracking-tight mb-2">
-            Design on AWS GovCloud
+            Let&apos;s Bring Your Story to Life
           </h1>
           <p className="text-muted text-sm mb-8 leading-relaxed">
-            Describe your project in plain English. CloudArch will recommend services, sketch your
-            backend pipeline, and generate deploy scripts for your AI IDE.
+            Describe your project in plain English. CloudArch turns it into AWS GovCloud
+            architecture — recommended services, data flow, cost estimates, and deploy scripts for
+            your AI IDE.
           </p>
 
           <form onSubmit={handleStart} className="rounded-2xl border border-border bg-card shadow-panel p-1">
@@ -47,7 +51,7 @@ export default function HomePage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              placeholder="e.g. FedRAMP-compliant document intake handling 10k docs/day with PII encryption..."
+              placeholder='e.g. "We need to store classified documents and let employees search them."'
               className="w-full resize-none rounded-xl px-4 py-4 text-sm focus:outline-none bg-transparent"
             />
             <div className="flex justify-between items-center px-3 pb-3">
@@ -64,9 +68,9 @@ export default function HomePage() {
 
           <div className="mt-6 flex flex-wrap gap-2">
             {[
-              "Document intake, 10k/day, FedRAMP",
+              "Store classified documents and let employees search them",
+              "FedRAMP document intake, 10k/day",
               "Secure API for mobile app",
-              "Real-time analytics pipeline",
             ].map((chip) => (
               <button
                 key={chip}
@@ -80,6 +84,6 @@ export default function HomePage() {
           </div>
         </div>
       </main>
-    </div>
+    </AppShell>
   );
 }

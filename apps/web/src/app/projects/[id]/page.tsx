@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getProject } from "@/lib/store";
-import { ProjectSidebar } from "@/components/layout/ProjectSidebar";
+import { AppShell } from "@/components/layout/AppShell";
 import { ProjectWorkspace } from "@/components/workspace/ProjectWorkspace";
 
 export default async function ProjectPage({
@@ -19,11 +19,8 @@ export default async function ProjectPage({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <ProjectSidebar activeProjectId={id} />
-      <div className="flex-1 min-w-0 flex flex-col">
-        <ProjectWorkspace project={project} bootstrapMessage={q} />
-      </div>
-    </div>
+    <AppShell activeProjectId={id}>
+      <ProjectWorkspace project={project} bootstrapMessage={q} />
+    </AppShell>
   );
 }

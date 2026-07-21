@@ -163,12 +163,110 @@ export function buildMockArchitecture(
   projectId: string,
   description: string
 ): ArchitectureProposal {
+  const lower = description.toLowerCase();
+  const isSearchWorkload =
+    lower.includes("search") || lower.includes("classified") || lower.includes("employee");
   const costEstimate = estimateMonthlyCost({
-    documentsPerDay: description.toLowerCase().includes("10k") ? 10000 : 5000,
+    documentsPerDay: lower.includes("10k") ? 10000 : 5000,
     storageGb: 500,
   });
 
-  const services = [
+  const searchServices = [
+    {
+      id: "apigw",
+      type: "awsService",
+      position: { x: 400, y: 120 },
+      data: {
+        label: "API Gateway",
+        service: "Amazon API Gateway",
+        category: "Networking",
+        description: "Secure upload and search API for employees",
+        govcloudAvailable: true,
+        aiRecommendation: "Front door for HTTPS document uploads and search queries with IAM auth.",
+      },
+    },
+    {
+      id: "lambda",
+      type: "awsService",
+      position: { x: 200, y: 280 },
+      data: {
+        label: "Lambda",
+        service: "AWS Lambda",
+        category: "Compute",
+        description: "Process uploads and index documents for search",
+        govcloudAvailable: true,
+        aiRecommendation:
+          "Serverless processing — runs automatically when a document arrives, no permanent servers.",
+      },
+    },
+    {
+      id: "s3",
+      type: "awsService",
+      position: { x: 600, y: 280 },
+      data: {
+        label: "S3",
+        service: "Amazon S3",
+        category: "Storage",
+        description: "Encrypted storage for classified documents",
+        govcloudAvailable: true,
+        aiRecommendation: "Durable object storage with SSE-KMS for classified data at rest.",
+      },
+    },
+    {
+      id: "opensearch",
+      type: "awsService",
+      position: { x: 400, y: 420 },
+      data: {
+        label: "OpenSearch",
+        service: "Amazon OpenSearch Service",
+        category: "Database",
+        description: "Full-text and metadata search index",
+        govcloudAvailable: true,
+        aiRecommendation: "Indexes document content so employees can search by keyword or metadata.",
+      },
+    },
+    {
+      id: "bedrock",
+      type: "awsService",
+      position: { x: 400, y: 560 },
+      data: {
+        label: "Bedrock",
+        service: "Amazon Bedrock",
+        category: "Compute",
+        description: "Semantic search and natural-language Q&A",
+        govcloudAvailable: true,
+        aiRecommendation: "Managed AI for semantic search and summarization over classified docs.",
+      },
+    },
+    {
+      id: "kms",
+      type: "awsService",
+      position: { x: 200, y: 560 },
+      data: {
+        label: "KMS",
+        service: "AWS KMS",
+        category: "Security",
+        description: "FIPS 140-2 encryption keys",
+        govcloudAvailable: true,
+        aiRecommendation: "Required for encrypting classified documents at rest and in transit.",
+      },
+    },
+    {
+      id: "cloudwatch",
+      type: "awsService",
+      position: { x: 600, y: 560 },
+      data: {
+        label: "CloudWatch",
+        service: "Amazon CloudWatch",
+        category: "Management",
+        description: "Audit logs for access and search activity",
+        govcloudAvailable: true,
+        aiRecommendation: "FedRAMP audit trail for who accessed or searched which documents.",
+      },
+    },
+  ];
+
+  const intakeServices = [
     {
       id: "route53",
       type: "awsService",
@@ -279,7 +377,18 @@ export function buildMockArchitecture(
     },
   ];
 
-  const connections = [
+  const services = isSearchWorkload ? searchServices : intakeServices;
+
+  const searchConnections = [
+    { id: "e1", source: "apigw", target: "lambda", label: "User uploads" },
+    { id: "e2", source: "lambda", target: "s3", label: "store" },
+    { id: "e3", source: "lambda", target: "opensearch", label: "index" },
+    { id: "e4", source: "opensearch", target: "bedrock", label: "semantic search" },
+    { id: "e5", source: "s3", target: "kms" },
+    { id: "e6", source: "lambda", target: "cloudwatch", label: "audit logs" },
+  ];
+
+  const intakeConnections = [
     { id: "e1", source: "route53", target: "cloudfront", animated: true },
     { id: "e2", source: "cloudfront", target: "apigw", animated: true },
     { id: "e3", source: "apigw", target: "lambda", label: "POST /documents" },
@@ -290,16 +399,22 @@ export function buildMockArchitecture(
     { id: "e8", source: "lambda", target: "cloudwatch", label: "logs" },
   ];
 
+  const connections = isSearchWorkload ? searchConnections : intakeConnections;
+
   const complianceFlags = checkCompliance({
     services: services.map((s) => s.data.service),
-    framework: description.toLowerCase().includes("itar") ? "ITAR" : "FedRAMP",
+    framework: lower.includes("itar") ? "ITAR" : "FedRAMP",
   });
+
+  const summary = isSearchWorkload
+    ? `GovCloud architecture for storing classified documents and enabling employee search. Flow: User Uploads → S3 → Lambda → OpenSearch → Bedrock. Based on: ${description.slice(0, 200)}`
+    : `FedRAMP-aligned document intake system for GovCloud handling high-volume uploads with encryption, async processing, and audit logging. Based on: ${description.slice(0, 200)}`;
 
   const proposal: ArchitectureProposal = {
     projectId,
-    summary: `FedRAMP-aligned document intake system for GovCloud handling high-volume uploads with encryption, async processing, and audit logging. Based on: ${description.slice(0, 200)}`,
+    summary,
     compliance: {
-      framework: description.toLowerCase().includes("itar") ? "ITAR" : "FedRAMP",
+      framework: lower.includes("itar") ? "ITAR" : "FedRAMP",
       level: "High",
       flags: complianceFlags,
     },
@@ -307,16 +422,25 @@ export function buildMockArchitecture(
     connections,
     tradeoffs: [
       {
-        title: "Lambda vs Fargate for processing",
-        pros: ["Lambda: zero ops, scales to zero", "Fargate: longer timeouts, custom runtimes"],
-        cons: ["Lambda: 15 min max timeout", "Fargate: always-on cost baseline"],
-        recommendation: "Start with Lambda + SQS for document validation; move heavy OCR to Fargate if needed.",
+        title: isSearchWorkload ? "OpenSearch vs Kendra for search" : "Lambda vs Fargate for processing",
+        pros: isSearchWorkload
+          ? ["OpenSearch: full control, lower cost at scale", "Kendra: managed ML search, less ops"]
+          : ["Lambda: zero ops, scales to zero", "Fargate: longer timeouts, custom runtimes"],
+        cons: isSearchWorkload
+          ? ["OpenSearch: cluster management", "Kendra: higher per-query cost"]
+          : ["Lambda: 15 min max timeout", "Fargate: always-on cost baseline"],
+        recommendation: isSearchWorkload
+          ? "OpenSearch + Bedrock gives flexible keyword and semantic search for classified docs in GovCloud."
+          : "Start with Lambda + SQS for document validation; move heavy OCR to Fargate if needed.",
       },
     ],
     costEstimate,
-    alternatives: [
-      buildServiceComparison(["Lambda", "Fargate"], "document processing"),
-    ],
+    alternatives: isSearchWorkload
+      ? [
+          buildServiceComparison(["OpenSearch", "Kendra"], "document search"),
+          buildServiceComparison(["Bedrock", "SageMaker"], "AI inference"),
+        ]
+      : [buildServiceComparison(["Lambda", "Fargate"], "document processing")],
   };
 
   proposal.generatedIac = generateFullIac(proposal);

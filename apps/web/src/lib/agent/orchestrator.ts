@@ -54,15 +54,39 @@ async function buildArchitecture(
 }
 
 function buildReply(projectName: string, architecture: ArchitectureProposal): string {
-  return `I've designed a GovCloud architecture for "${projectName}" using OpenSearch RAG + GPT OSS analysis.
+  const pipeline = architecture.services.map((s) => s.data.label).join(" → ");
+  const scores = architecture.scores;
+  const scoreLine = scores
+    ? `**Report card:** Security ${"★".repeat(scores.security)}${"☆".repeat(5 - scores.security)} · Scalability ${"★".repeat(scores.scalability)}${"☆".repeat(5 - scores.scalability)} · Cost ${"★".repeat(scores.cost)}${"☆".repeat(5 - scores.cost)}`
+    : "";
+
+  const rationaleBlock = (architecture.serviceRationales ?? [])
+    .slice(0, 4)
+    .map((r) => `- **${r.serviceName}:** ${r.plainEnglish}`)
+    .join("\n");
+
+  const altBlock =
+    architecture.alternatives.length > 0
+      ? `\n**Alternatives:** ${architecture.alternatives.map((a) => a.verdict).join(" ")}`
+      : "";
+
+  return `I've designed a GovCloud architecture for "${projectName}".
 
 **Summary:** ${architecture.summary}
 
-**Pipeline:** ${architecture.services.map((s) => s.data.label).join(" → ")}
+**Recommended services:** ${architecture.services.map((s) => s.data.label).join(", ")}
+
+**Data flow:** ${pipeline}
 
 **Estimated cost:** $${architecture.costEstimate.monthlyTotalLow.toFixed(0)}–$${architecture.costEstimate.monthlyTotalHigh.toFixed(0)}/month
 
-Hover any service in the pipeline for pricing, scalability, and AI recommendations. Double-click for full analytics.`;
+${scoreLine}
+
+**Why these services:**
+${rationaleBlock || architecture.services.map((s) => `- **${s.data.label}:** ${s.data.description ?? s.data.aiRecommendation ?? ""}`).join("\n")}
+${altBlock}
+
+Hover any node in the pipeline for pricing and scalability. Click **Deploy on AWS** when you're ready to copy scripts for your AI IDE.`;
 }
 
 export async function runAgent(

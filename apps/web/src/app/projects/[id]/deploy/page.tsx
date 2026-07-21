@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProject } from "@/lib/store";
-import { ProjectSidebar } from "@/components/layout/ProjectSidebar";
+import { AppShell } from "@/components/layout/AppShell";
 import { DeployPanel } from "@/components/deploy/DeployPanel";
+import { SidebarToggle } from "@/components/layout/AppShell";
 
 export default async function DeployPage({
   params,
@@ -17,10 +18,10 @@ export default async function DeployPage({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      <ProjectSidebar activeProjectId={id} />
+    <AppShell activeProjectId={id}>
       <main className="flex-1 overflow-y-auto scrollbar-thin bg-background">
-        <div className="border-b border-border bg-card px-8 py-4">
+        <div className="border-b border-border bg-card px-8 py-4 flex items-center gap-3">
+          <SidebarToggle />
           <Link
             href={`/projects/${id}`}
             className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent"
@@ -38,6 +39,6 @@ export default async function DeployPage({
           />
         </div>
       </main>
-    </div>
+    </AppShell>
   );
 }

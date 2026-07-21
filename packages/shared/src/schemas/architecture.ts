@@ -90,6 +90,29 @@ export const GeneratedIacSchema = z.object({
   copilotPrompt: z.string(),
 });
 
+export const ArchitectureScoreSchema = z.object({
+  security: z.number().min(1).max(5),
+  scalability: z.number().min(1).max(5),
+  cost: z.number().min(1).max(5),
+  securityNotes: z.string().optional(),
+  scalabilityNotes: z.string().optional(),
+  costNotes: z.string().optional(),
+});
+
+export const DataFlowStepSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  label: z.string().optional(),
+  explanation: z.string(),
+});
+
+export const ServiceRationaleSchema = z.object({
+  serviceId: z.string(),
+  serviceName: z.string(),
+  whyChosen: z.string(),
+  plainEnglish: z.string(),
+});
+
 export const ArchitectureProposalSchema = z.object({
   projectId: z.string(),
   summary: z.string(),
@@ -105,6 +128,14 @@ export const ArchitectureProposalSchema = z.object({
   alternatives: z.array(ServiceComparisonSchema),
   generatedIac: GeneratedIacSchema.optional(),
   ragInsights: z.array(z.string()).optional(),
+  scores: ArchitectureScoreSchema.optional(),
+  dataFlow: z
+    .object({
+      narrative: z.string(),
+      steps: z.array(DataFlowStepSchema),
+    })
+    .optional(),
+  serviceRationales: z.array(ServiceRationaleSchema).optional(),
 });
 
 export const ProjectSchema = z.object({
@@ -136,6 +167,9 @@ export type CostLineItem = z.infer<typeof CostLineItemSchema>;
 export type CostBreakdown = z.infer<typeof CostBreakdownSchema>;
 export type ServiceComparison = z.infer<typeof ServiceComparisonSchema>;
 export type GeneratedIac = z.infer<typeof GeneratedIacSchema>;
+export type ArchitectureScore = z.infer<typeof ArchitectureScoreSchema>;
+export type DataFlowStep = z.infer<typeof DataFlowStepSchema>;
+export type ServiceRationale = z.infer<typeof ServiceRationaleSchema>;
 export type ArchitectureProposal = z.infer<typeof ArchitectureProposalSchema>;
 export type Project = z.infer<typeof ProjectSchema>;
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;

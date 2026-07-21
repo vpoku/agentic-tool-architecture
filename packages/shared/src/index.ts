@@ -5,3 +5,4 @@ export * from "./compliance/rules.js";
 export * from "./iac/generate-cdk.js";
 export * from "./layout/auto-layout.js";
 export * from "./analytics/enrich-node.js";
+export * from "./analytics/score-architecture.js";

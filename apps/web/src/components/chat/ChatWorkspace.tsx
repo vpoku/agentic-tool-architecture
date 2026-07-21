@@ -15,6 +15,20 @@ interface Message {
   content: string;
 }
 
+function formatMessage(content: string) {
+  const parts = content.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export function ChatWorkspace({
   projectId,
   initialDescription,
@@ -105,8 +119,8 @@ export function ChatWorkspace({
         {messages.length === 0 && !loading && (
           <div className="rounded-xl border border-dashed border-border p-6 text-center">
             <p className="text-sm text-muted leading-relaxed">
-              Example: &ldquo;We need a FedRAMP-compliant document intake system handling 10k
-              documents per day with PII encryption.&rdquo;
+              Example: &ldquo;We need to store classified documents and let employees search
+              them.&rdquo;
             </p>
           </div>
         )}
@@ -119,7 +133,7 @@ export function ChatWorkspace({
                 : "mr-auto bg-background border border-border text-foreground"
             }`}
           >
-            <p className="whitespace-pre-wrap">{msg.content}</p>
+            <p className="whitespace-pre-wrap">{formatMessage(msg.content)}</p>
           </div>
         ))}
         {loading && (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { SidebarProvider } from "@/components/layout/SidebarContext";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${jetbrains.variable} font-sans`}>{children}</body>
+      <body className={`${inter.variable} ${jetbrains.variable} font-sans`}>
+        <SidebarProvider>{children}</SidebarProvider>
+      </body>
     </html>
   );
 }

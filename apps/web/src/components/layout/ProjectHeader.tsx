@@ -3,13 +3,15 @@
 import { useState } from "react";
 import type { Project } from "@cloudarch/shared";
 import { ProjectSettings } from "@/components/projects/ProjectSettings";
+import { SidebarToggle } from "@/components/layout/AppShell";
 
 interface ProjectHeaderProps {
   project: Project;
   onUpdated: (project: Project) => void;
+  onDeploy?: () => void;
 }
 
-export function ProjectHeader({ project, onUpdated }: ProjectHeaderProps) {
+export function ProjectHeader({ project, onUpdated, onDeploy }: ProjectHeaderProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(project.name);
   const [saving, setSaving] = useState(false);
@@ -39,6 +41,7 @@ export function ProjectHeader({ project, onUpdated }: ProjectHeaderProps) {
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-5 flex-shrink-0">
       <div className="flex items-center gap-3 min-w-0">
+        <SidebarToggle />
         {editing ? (
           <input
             value={name}
@@ -86,7 +89,14 @@ export function ProjectHeader({ project, onUpdated }: ProjectHeaderProps) {
         </button>
         <a
           href={`/projects/${project.projectId}/deploy`}
-          className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="hidden sm:flex items-center gap-2 text-sm font-medium text-muted hover:text-accent px-3 py-2 rounded-lg hover:bg-background transition-colors"
+        >
+          Full export
+        </a>
+        <button
+          onClick={() => onDeploy?.()}
+          disabled={!onDeploy}
+          className="flex items-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-40 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -96,8 +106,8 @@ export function ProjectHeader({ project, onUpdated }: ProjectHeaderProps) {
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          Deploy to AWS
-        </a>
+          Deploy on AWS
+        </button>
       </div>
 
       {showSettings && (

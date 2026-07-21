@@ -7,9 +7,15 @@ import type { Project } from "@cloudarch/shared";
 
 interface ProjectSidebarProps {
   activeProjectId?: string;
+  onNewProject?: () => void;
+  collapsed?: boolean;
 }
 
-export function ProjectSidebar({ activeProjectId }: ProjectSidebarProps) {
+export function ProjectSidebar({
+  activeProjectId,
+  onNewProject,
+  collapsed = false,
+}: ProjectSidebarProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -27,6 +33,10 @@ export function ProjectSidebar({ activeProjectId }: ProjectSidebarProps) {
   }, [loadProjects, pathname]);
 
   async function handleNewProject() {
+    if (onNewProject) {
+      onNewProject();
+      return;
+    }
     const res = await fetch("/api/projects", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,35 +60,40 @@ export function ProjectSidebar({ activeProjectId }: ProjectSidebarProps) {
     loadProjects();
   }
 
+  if (collapsed) return null;
+
   return (
-    <aside className="w-64 flex-shrink-0 border-r border-border bg-card flex flex-col h-full">
-      <div className="p-4 border-b border-border">
-        <Link href="/" className="flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+    <aside className="w-64 h-full border-r border-border bg-card flex flex-col">
+      <div className="p-3 border-b border-border">
+        <Link href="/" className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-background transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center flex-shrink-0">
             <span className="text-white text-sm font-bold">C</span>
           </div>
-          <span className="font-semibold text-foreground">CloudArch</span>
+          <span className="font-semibold text-foreground text-sm">CloudArch</span>
         </Link>
-        <button
-          onClick={handleNewProject}
-          className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          New project
-        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-thin p-2">
-        <p className="text-xs font-medium text-muted uppercase tracking-wider px-2 py-2">
-          Projects
-        </p>
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-2 py-2">
+        <div className="flex items-center justify-between px-2 py-1.5 mb-1">
+          <p className="text-xs font-medium text-muted uppercase tracking-wider">Projects</p>
+          <button
+            onClick={handleNewProject}
+            className="p-1 rounded-md text-muted hover:text-accent hover:bg-accent-muted transition-colors"
+            title="New project"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
         {loading && (
-          <p className="text-sm text-muted px-2 py-4 animate-pulse-soft">Loading...</p>
+          <p className="text-sm text-muted px-2 py-4 animate-pulse-soft">Loading…</p>
         )}
         {!loading && projects.length === 0 && (
-          <p className="text-sm text-muted px-2 py-4">No projects yet</p>
+          <p className="text-xs text-muted px-2 py-3 leading-relaxed">
+            No projects yet. Click + to start.
+          </p>
         )}
         {projects.map((project) => (
           <Link
@@ -92,16 +107,16 @@ export function ProjectSidebar({ activeProjectId }: ProjectSidebarProps) {
           >
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate">{project.name}</p>
-              <p className="text-xs text-muted truncate mt-0.5">
+              <p className="text-[11px] text-muted truncate mt-0.5">
                 {project.status === "ready" ? "Architecture ready" : "Draft"}
               </p>
             </div>
             <button
               onClick={(e) => handleDelete(e, project.projectId)}
-              className="opacity-0 group-hover:opacity-100 text-muted hover:text-danger p-1 transition-opacity"
+              className="opacity-0 group-hover:opacity-100 text-muted hover:text-danger p-1 transition-opacity flex-shrink-0"
               title="Delete project"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -112,6 +127,10 @@ export function ProjectSidebar({ activeProjectId }: ProjectSidebarProps) {
             </button>
           </Link>
         ))}
+      </div>
+
+      <div className="p-3 border-t border-border">
+        <p className="text-[10px] text-muted px-2">GovCloud · us-gov-west-1</p>
       </div>
     </aside>
   );

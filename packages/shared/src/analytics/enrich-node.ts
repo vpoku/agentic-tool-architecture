@@ -1,4 +1,5 @@
 import type { ArchitectureProposal, ServiceNode } from "../schemas/architecture.js";
+import { enrichArchitectureMetadata } from "./score-architecture.js";
 
 const SERVICE_CAPACITY: Record<
   string,
@@ -112,10 +113,11 @@ export function enrichNodeAnalytics(
 export function enrichArchitectureAnalytics(
   architecture: ArchitectureProposal
 ): ArchitectureProposal {
-  return {
+  const withNodes = {
     ...architecture,
     services: architecture.services.map((node) => enrichNodeAnalytics(node, architecture)),
   };
+  return enrichArchitectureMetadata(withNodes);
 }
 
 export { SERVICE_CAPACITY };
