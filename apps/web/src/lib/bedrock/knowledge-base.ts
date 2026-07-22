@@ -35,6 +35,46 @@ const LOCAL_CORPUS: RagResult[] = [
     source: "High Volume Intake",
     text: "For 10k+ documents/day: use SQS to buffer uploads, Lambda concurrency limits with reserved concurrency, DynamoDB on-demand for metadata, and S3 multipart uploads.",
   },
+  {
+    source: "Azure Blob to S3 Migration",
+    text: "Azure Blob Storage maps to Amazon S3 in GovCloud. Convert containers to buckets, enable SSE-KMS, block public access, and use AWS DataSync or azcopy for bulk transfer.",
+  },
+  {
+    source: "Azure Functions to Lambda",
+    text: "Azure Functions maps to AWS Lambda. Rewrite triggers for API Gateway, S3 events, or SQS. Configure IAM execution roles with least privilege.",
+  },
+  {
+    source: "Azure AD to IAM Identity Center",
+    text: "Azure Active Directory maps to IAM Identity Center for workforce SSO and Amazon Cognito for application users. Enable MFA and SAML federation.",
+  },
+  {
+    source: "Azure Cognitive Search to OpenSearch",
+    text: "Azure Cognitive Search maps to Amazon OpenSearch Service in GovCloud. Reindex documents and configure fine-grained access control.",
+  },
+  {
+    source: "Azure SQL to RDS",
+    text: "Azure SQL Database maps to Amazon RDS. Use AWS DMS for schema migration with Multi-AZ for high availability.",
+  },
+  {
+    source: "Azure OpenAI to Bedrock",
+    text: "Azure OpenAI maps to Amazon Bedrock in GovCloud for managed foundation models with audit logging and VPC endpoints.",
+  },
+  {
+    source: "Azure Key Vault to KMS",
+    text: "Azure Key Vault maps to AWS KMS and Secrets Manager. Rotate secrets during cutover and use CMKs with strict key policies.",
+  },
+  {
+    source: "Azure Monitor to CloudWatch",
+    text: "Azure Monitor and Application Insights map to CloudWatch Logs, Metrics, and X-Ray. Configure retention for FedRAMP audits.",
+  },
+  {
+    source: "AWS MAP Migration",
+    text: "AWS Migration Acceleration Program (MAP) provides methodology for Azure-to-AWS migrations: assess, mobilize, migrate, and optimize phases.",
+  },
+  {
+    source: "Healthcare HIPAA on GovCloud",
+    text: "Healthcare workloads require HIPAA-eligible services in GovCloud: encrypted S3, RDS with encryption, Cognito with MFA, and CloudTrail audit logging.",
+  },
 ];
 
 function getAgentClient(): BedrockAgentRuntimeClient {

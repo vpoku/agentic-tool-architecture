@@ -9,7 +9,7 @@ import {
   GetCommand,
   QueryCommand,
 } from "@aws-sdk/lib-dynamodb";
-import type { Project, ChatMessage, ArchitectureProposal } from "@cloudarch/shared";
+import type { Project, ChatMessage, ArchitectureProposal, MigrationAssessment } from "@cloudarch/shared";
 import * as memoryStore from "./projects";
 
 const TABLE_PROJECTS = process.env.DYNAMODB_PROJECTS_TABLE ?? "CloudArch-Projects";
@@ -71,6 +71,7 @@ export async function createProject(input: {
   name: string;
   description: string;
   complianceLevel?: string;
+  projectType?: "architecture" | "migration";
 }): Promise<Project> {
   if (!USE_DYNAMODB) return memoryStore.createProject(input);
 
@@ -160,9 +161,31 @@ export async function addChatMessage(
   return full;
 }
 
+export async function saveMigrationAssessment(
+  projectId: string,
+  migrationAssessment: MigrationAssessment
+): Promise<Project | null> {
+  const updated = await memoryStore.saveMigrationAssessment(projectId, migrationAssessment);
+  if (!updated || !USE_DYNAMODB) return updated;
+
+  const doc = getClient();
+  await doc.send(
+    new PutCommand({
+      TableName: TABLE_PROJECTS,
+      Item: updated,
+    })
+  );
+  return updated;
+}
+
 export async function updateProject(
   projectId: string,
-  updates: Partial<Pick<Project, "name" | "description" | "status" | "architecture" | "complianceLevel">>
+  updates: Partial<
+    Pick<
+      Project,
+      "name" | "description" | "status" | "architecture" | "complianceLevel" | "migrationAssessment"
+    >
+  >
 ): Promise<Project | null> {
   const updated = await memoryStore.updateProject(projectId, updates);
   if (!updated || !USE_DYNAMODB) return updated;

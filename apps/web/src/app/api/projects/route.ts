@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     name,
     description,
     complianceLevel: body.complianceLevel ?? "FedRAMP High",
+    projectType: body.projectType === "migration" ? "migration" : "architecture",
   });
 
   return NextResponse.json({

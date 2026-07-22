@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProject } from "@/lib/store";
 import { AppShell } from "@/components/layout/AppShell";
-import { ProjectWorkspace } from "@/components/workspace/ProjectWorkspace";
+import { CanvasBuilder } from "@/components/canvas/CanvasBuilder";
 
 export default async function ProjectPage({
   params,
@@ -18,9 +18,13 @@ export default async function ProjectPage({
     notFound();
   }
 
+  if (project.projectType === "migration") {
+    notFound();
+  }
+
   return (
     <AppShell activeProjectId={id}>
-      <ProjectWorkspace project={project} bootstrapMessage={q} />
+      <CanvasBuilder project={project} bootstrapMessage={q} />
     </AppShell>
   );
 }

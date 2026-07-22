@@ -44,7 +44,7 @@ export function ProjectSidebar({
     });
     const data = await res.json();
     if (data.projectId) {
-      router.push(`/projects/${data.projectId}`);
+      router.push("/app");
       router.refresh();
     }
   }
@@ -98,7 +98,11 @@ export function ProjectSidebar({
         {projects.map((project) => (
           <Link
             key={project.projectId}
-            href={`/projects/${project.projectId}`}
+            href={
+              project.projectType === "migration"
+                ? `/projects/${project.projectId}/migration`
+                : `/projects/${project.projectId}`
+            }
             className={`group flex items-start justify-between gap-2 rounded-lg px-3 py-2.5 mb-0.5 transition-colors ${
               activeProjectId === project.projectId
                 ? "bg-accent-muted text-accent"
@@ -108,7 +112,13 @@ export function ProjectSidebar({
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate">{project.name}</p>
               <p className="text-[11px] text-muted truncate mt-0.5">
-                {project.status === "ready" ? "Architecture ready" : "Draft"}
+                {project.projectType === "migration"
+                  ? project.status === "ready"
+                    ? "Migration ready"
+                    : "Migration draft"
+                  : project.status === "ready"
+                    ? "Architecture ready"
+                    : "Draft"}
               </p>
             </div>
             <button

@@ -1,4 +1,4 @@
-import type { Project, ChatMessage, ArchitectureProposal } from "@cloudarch/shared";
+import type { Project, ChatMessage, ArchitectureProposal, MigrationAssessment } from "@cloudarch/shared";
 
 const projects = new Map<string, Project>();
 const messages = new Map<string, ChatMessage[]>();
@@ -11,6 +11,7 @@ export async function createProject(input: {
   name: string;
   description: string;
   complianceLevel?: string;
+  projectType?: "architecture" | "migration";
 }): Promise<Project> {
   const now = new Date().toISOString();
   const project: Project = {
@@ -19,6 +20,7 @@ export async function createProject(input: {
     name: input.name.slice(0, 80) || "Untitled Project",
     description: input.description,
     complianceLevel: input.complianceLevel ?? "FedRAMP High",
+    projectType: input.projectType ?? "architecture",
     status: "draft",
     createdAt: now,
     updatedAt: now,
@@ -47,7 +49,12 @@ export async function deleteProject(projectId: string): Promise<boolean> {
 
 export async function updateProject(
   projectId: string,
-  updates: Partial<Pick<Project, "name" | "description" | "status" | "architecture" | "complianceLevel">>
+  updates: Partial<
+    Pick<
+      Project,
+      "name" | "description" | "status" | "architecture" | "complianceLevel" | "migrationAssessment"
+    >
+  >
 ): Promise<Project | null> {
   const project = projects.get(projectId);
   if (!project) return null;
@@ -66,6 +73,17 @@ export async function saveArchitecture(
 ): Promise<Project | null> {
   return updateProject(projectId, {
     architecture,
+    status: "ready",
+  });
+}
+
+export async function saveMigrationAssessment(
+  projectId: string,
+  migrationAssessment: MigrationAssessment
+): Promise<Project | null> {
+  return updateProject(projectId, {
+    migrationAssessment,
+    architecture: migrationAssessment.targetArchitecture,
     status: "ready",
   });
 }

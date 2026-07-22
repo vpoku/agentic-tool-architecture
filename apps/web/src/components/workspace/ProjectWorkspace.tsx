@@ -1,65 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
-import type { ArchitectureProposal, Project } from "@cloudarch/shared";
-import { ChatWorkspace } from "@/components/chat/ChatWorkspace";
-import { PipelineCanvas } from "@/components/pipeline/PipelineCanvas";
-import { ProjectHeader } from "@/components/layout/ProjectHeader";
-import { DeployDrawer } from "@/components/deploy/DeployDrawer";
+import type { Project } from "@cloudarch/shared";
+import { CanvasBuilder } from "@/components/canvas/CanvasBuilder";
 
 interface ProjectWorkspaceProps {
   project: Project;
   bootstrapMessage?: string;
 }
 
-export function ProjectWorkspace({ project: initialProject, bootstrapMessage }: ProjectWorkspaceProps) {
-  const [project, setProject] = useState(initialProject);
-  const [generating, setGenerating] = useState(false);
-  const [showDeploy, setShowDeploy] = useState(false);
-  const router = useRouter();
-
-  const handleArchitectureGenerated = useCallback(
-    (architecture: ArchitectureProposal) => {
-      setProject((prev) => ({ ...prev, architecture, status: "ready" }));
-      router.refresh();
-    },
-    [router]
-  );
-
-  return (
-    <div className="flex flex-col h-full min-h-0">
-      <ProjectHeader
-        project={project}
-        onUpdated={setProject}
-        onDeploy={() => setShowDeploy(true)}
-      />
-      <div className="flex flex-1 min-h-0">
-        <div className="w-[380px] flex-shrink-0 border-r border-border min-h-0">
-          <ChatWorkspace
-            projectId={project.projectId}
-            initialDescription={bootstrapMessage}
-            onArchitectureGenerated={handleArchitectureGenerated}
-            onGeneratingChange={setGenerating}
-          />
-        </div>
-        <div className="flex-1 min-h-0 flex flex-col bg-background overflow-hidden">
-          <PipelineCanvas
-            projectId={project.projectId}
-            projectName={project.name}
-            architecture={project.architecture}
-            generating={generating}
-            onDeploy={() => setShowDeploy(true)}
-          />
-        </div>
-      </div>
-
-      <DeployDrawer
-        open={showDeploy}
-        onClose={() => setShowDeploy(false)}
-        projectName={project.name}
-        generatedIac={project.architecture?.generatedIac}
-      />
-    </div>
-  );
+/** @deprecated Use CanvasBuilder directly */
+export function ProjectWorkspace({ project, bootstrapMessage }: ProjectWorkspaceProps) {
+  return <CanvasBuilder project={project} bootstrapMessage={bootstrapMessage} />;
 }

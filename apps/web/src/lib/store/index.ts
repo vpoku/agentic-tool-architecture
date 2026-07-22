@@ -5,6 +5,7 @@ export {
   updateProject,
   deleteProject,
   saveArchitecture,
+  saveMigrationAssessment,
   getChatMessages,
   addChatMessage,
   getDemoUserId,

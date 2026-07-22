@@ -39,11 +39,27 @@ Open [http://localhost:3000](http://localhost:3000). No AWS credentials required
 - **Hover** — pricing estimate, scalability, AI recommendation per service
 - **Deploy** — export CDK stack + Copilot prompt for your AI IDE
 
+## Migration feature (Azure → AWS GovCloud)
+
+Access via the **Migration** link in the top navigation bar.
+
+1. Go to `/migration` and describe your existing Azure architecture
+2. CloudArch detects Azure services, maps them to AWS GovCloud equivalents
+3. Review tabs: Azure Source, AWS Target diagram, Mapping, Security, Learn, Plan
+4. Export migration runbook and learning summary (educational — not auto-migrate)
+
+### Migration agent pipeline
+
+Azure Analyzer → Migration Planner → AWS Architect → Security Reviewer → Cloud Tutor
+
+Mock mode works without AWS credentials using the local Azure→AWS mapping catalog.
+
 ## Monorepo structure
 
 ```
 apps/web/          Next.js app
 packages/shared/   Schemas, pricing, IaC generation, node analytics
+infra/cloudarch/   CDK stack for future AWS deployment
 ```
 
 ## Scripts

@@ -68,15 +68,14 @@ interface PipelineCanvasProps {
   projectName?: string;
   architecture?: ArchitectureProposal;
   generating?: boolean;
-  onDeploy?: () => void;
+  embedded?: boolean;
 }
 
 export function PipelineCanvas({
   projectId,
-  projectName,
   architecture,
   generating = false,
-  onDeploy,
+  embedded = false,
 }: PipelineCanvasProps) {
   const router = useRouter();
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -191,7 +190,11 @@ export function PipelineCanvas({
 
   if (!architecture) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background border border-border rounded-xl m-4">
+      <div
+        className={`flex-1 flex items-center justify-center bg-background ${
+          embedded ? "m-0 rounded-none border-0" : "border border-border rounded-xl m-4"
+        }`}
+      >
         <div className="text-center max-w-sm px-6">
           <div className="w-12 h-12 rounded-full bg-accent-muted flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -203,11 +206,51 @@ export function PipelineCanvas({
               />
             </svg>
           </div>
-          <p className="text-sm font-medium text-foreground mb-1">Pipeline will appear here</p>
-          <p className="text-xs text-muted leading-relaxed">
-            Send a prompt in the chat. OpenSearch RAG + GPT OSS 120B will illustrate your GovCloud
-            backend architecture.
+          <p className="text-sm font-medium text-foreground mb-1">
+            {generating ? "Generating your architecture…" : "Your architecture will appear here"}
           </p>
+          <p className="text-xs text-muted leading-relaxed">
+            {generating
+              ? "OpenSearch RAG + GPT OSS is designing your GovCloud backend…"
+              : "Describe your cloud system and click Generate Architecture to begin."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (embedded) {
+    return (
+      <div className="flex-1 flex flex-col min-h-0 h-full">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card flex-shrink-0">
+          <p className="text-xs text-muted">
+            Hover for pricing · click to pin · double-click for details
+          </p>
+          <div className="flex gap-2">
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-accent-muted text-accent">
+              {architecture.compliance.framework}
+            </span>
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full border border-border text-muted">
+              {architecture.services.length} services
+            </span>
+          </div>
+        </div>
+        <div className="flex-1 min-h-[360px] relative">
+          <PipelineLayerBands />
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            onNodeDoubleClick={onNodeDoubleClick}
+            {...flowProps}
+            className="relative z-10 h-full"
+          >
+            <Background gap={20} color="#e5e5e5" />
+            <Controls showInteractive={false} className="!shadow-soft !border-border" />
+          </ReactFlow>
+          <NodeHoverTooltip service={hoveredNode} anchorRect={hoverRect} />
         </div>
       </div>
     );
@@ -239,14 +282,6 @@ export function PipelineCanvas({
           <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-background border border-border text-muted">
             {architecture.services.length} services
           </span>
-          {onDeploy && (
-            <button
-              onClick={onDeploy}
-              className="flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors"
-            >
-              Deploy on AWS
-            </button>
-          )}
         </div>
       </div>
 

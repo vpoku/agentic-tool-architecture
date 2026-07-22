@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MigrationAssessmentSchema } from "./migration-assessment.js";
 
 export const ComplianceFrameworkSchema = z.enum([
   "FedRAMP",
@@ -144,8 +145,10 @@ export const ProjectSchema = z.object({
   name: z.string(),
   description: z.string(),
   complianceLevel: z.string().default("FedRAMP High"),
+  projectType: z.enum(["architecture", "migration"]).default("architecture"),
   status: z.enum(["draft", "analyzing", "ready", "exported"]).default("draft"),
   architecture: ArchitectureProposalSchema.optional(),
+  migrationAssessment: MigrationAssessmentSchema.optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

@@ -86,7 +86,7 @@ ${scoreLine}
 ${rationaleBlock || architecture.services.map((s) => `- **${s.data.label}:** ${s.data.description ?? s.data.aiRecommendation ?? ""}`).join("\n")}
 ${altBlock}
 
-Hover any node in the pipeline for pricing and scalability. Click **Deploy on AWS** when you're ready to copy scripts for your AI IDE.`;
+Hover any node in the pipeline for pricing and scalability. Open the **Review** tab for costs, data flow, and service rationale.`;
 }
 
 export async function runAgent(
